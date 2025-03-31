@@ -14,6 +14,7 @@ Your current disks and partitions:
 
 EOF
 lsblk -I 8,253,254,259
+echo ""
 while [[ -z $disk ]] || [[ ! -e /dev/$disk ]]; do
   read -p "Enter a valid disk name (e.g. sda or nvme0n1): " disk
 done
