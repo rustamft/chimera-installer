@@ -9,6 +9,7 @@ cat << EOF
 #################################################################
 
 Your current disks and partitions:
+
 EOF
 lsblk -I 8,253,254,259
 while [[ -z $disk ]] || [[ ! -e /dev/$disk ]]; do
