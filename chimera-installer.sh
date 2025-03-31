@@ -1,12 +1,15 @@
-echo "#################################################################"
-echo "###                                                           ###"
-echo "###      Wellcome to the Chimera Linux install script!        ###"
-echo "###                                                           ###"
-echo "###                         WARNING!                          ###"
-echo "###   The script will destroy all data on a disk you choose   ###"
-echo "###                                                           ###"
-echo "#################################################################"
-echo "Your current disks and partitions:"
+cat << EOF
+#################################################################
+###                                                           ###
+###      Wellcome to the Chimera Linux install script!        ###
+###                                                           ###
+###                         WARNING!                          ###
+###   The script will destroy all data on a disk you choose   ###
+###                                                           ###
+#################################################################
+
+Your current disks and partitions:
+EOF
 lsblk -I 8,253,254,259
 while [[ -z $disk ]] || [[ ! -e /dev/$disk ]]; do
   read -p "Enter a valid disk name (e.g. sda or nvme0n1): " disk
@@ -67,6 +70,6 @@ mount /dev/$disk_partition_1 /media/root/boot
 chmod 755 /media/root
 chimera-bootstrap /media/root
 chimera-chroot /media/root << EOF
-  apk add linux-$kernel_type
-  genfstab / >> /etc/fstab
+apk add linux-$kernel_type
+genfstab / >> /etc/fstab
 EOF
