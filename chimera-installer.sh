@@ -58,7 +58,7 @@ n
 w
 q
 EOF
-mkfs.vfat $disk_partition_1
+mkfs.vfat /dev/$disk_partition_1
 echo -n $password | cryptsetup luksFormat /dev/$disk_partition_2 -
 echo -n $password | cryptsetup luksOpen /dev/$disk_partition_2 cryptroot -
 mkfs.f2fs /dev/mapper/cryptroot
