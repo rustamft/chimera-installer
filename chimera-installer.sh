@@ -16,12 +16,10 @@ while [[ -z $disk ]] || [[ ! -e /dev/$disk ]]; do
   read -p "Enter a valid disk name (e.g. sda or nvme0n1): " disk
 done
 if [[ $disk == *"nvme"* ]]; then
-  disk_partition_1="${disk}p1"
-  disk_partition_2="${disk}p2"
-else
-  disk_partition_1="${disk}1"
-  disk_partition_2="${disk}2"
+  partition_number_prefix="p"
 fi
+disk_partition_1="${disk}${partition_number_prefix}1"
+disk_partition_2="${disk}${partition_number_prefix}2"
 while [[ -z $password ]] || [[ $password != $password_confirmation ]]; do
   read -s -p "Enter a password for the ${disk_partition_2} partition encryption: " password
   printf "\n"
