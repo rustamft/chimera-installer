@@ -53,16 +53,15 @@ n
 w
 q
 EOF
+mkfs.vfat $disk_partition_1
 echo -n $password | cryptsetup luksFormat /dev/$disk_partition_2 -
 echo -n $password | cryptsetup luksOpen /dev/$disk_partition_2 cryptroot -
-mkfs.vfat $disk_partition_1
-mkfs.f2fs $disk_partition_2
+mkfs.f2fs /dev/mapper/cryptroot
 if [[ ! -e /dev/$disk_partition_1 ]] || [[ ! -e /dev/$disk_partition_2 ]] || [[ ! -e /dev/mapper/cryptroot ]]; then
   echo "${disk} is not partitioned correctly"
   exit
 fi
-mkdir /media/root
-mkdir /media/root/boot
+mkdir -p /media/root/boot
 mount /dev/mapper/cryptroot /media/root
 mount /dev/$disk_partition_1 /media/root/boot
 chmod 755 /media/root
