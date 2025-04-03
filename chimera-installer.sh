@@ -151,6 +151,7 @@ if $is_flatpak_required; then
 fi
 echo $host_name > /etc/hostname
 genfstab / >> /etc/fstab
+echo cryptroot /dev/$disk_partition_2 none luks > /etc/crypttab
 uuid=$(blkid -o value -s UUID /dev/mapper/cryptroot)
 appendix="cryptdevice=UUID=\${uuid}:cryptroot root=\/dev\/mapper\/cryptroot"
 sed -i "s/^GRUB_CMDLINE_LINUX_DEFAULT=\"[^\"]*/& \${appendix}/" /etc/default/grub
