@@ -43,7 +43,7 @@ while [[ -z $host_name ]]; do
   read -p "Enter the host name: " host_name
   printf "\n"
 done
-packages="grub-x86_64-efi cryptsetup"
+packages="grub-x86_64-efi cryptsetup-scripts"
 while [[ $kernel_type != "lts" ]] && [[ $kernel_type != "stable" ]]; do
   printf "Choose kernel type:\n  1) LTS\n  2) Stable\n"
   read kernel_type
