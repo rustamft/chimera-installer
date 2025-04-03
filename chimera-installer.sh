@@ -62,7 +62,7 @@ while [[ $kernel_type != "lts" ]] && [[ $kernel_type != "stable" ]]; do
   esac
 done
 while [[ -z $desktop_environment ]]; do
-  printf "Choose installation type:\n  1) Only basic services for a desktop environment\n  2) Minimal GNOME\n  3) Minimal KDE\n"
+  printf "Choose installation type:\n  1) Only basic services for a desktop environment\n  2) GNOME\n  3) KDE\n"
   read desktop_environment
   case $desktop_environment in
     "1")
