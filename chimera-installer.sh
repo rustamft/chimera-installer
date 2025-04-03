@@ -69,11 +69,11 @@ while [[ -z $desktop_environment ]]; do
       desktop_environment="Basic" ;;
     "2")
       desktop_environment="GNOME"
-      packages="$packages gnome tlp"
+      packages="$packages gdm gnome tlp"
       ;;
     "3")
       desktop_environment="KDE"
-      packages="$packages plasma-desktop tlp"
+      packages="$packages sddm plasma-desktop tlp"
       ;;
     *)
       printf "This is not an option\n"
@@ -140,6 +140,12 @@ useradd $user_name
 echo -n $password_user | passwd --stdin $user_name
 usermod -a -G wheel,kvm,plugdev $user_name
 apk add $packages
+case $desktop_environment in
+  "GNOME")
+    dinitctl enable gdm ;;
+  "KDE")
+    dinitctl enable sddm ;;
+esac
 if $is_flatpak_required; then
   flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
 fi
