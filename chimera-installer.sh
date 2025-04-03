@@ -156,7 +156,7 @@ appendix="cryptdevice=UUID=\${uuid}:cryptroot root=\/dev\/mapper\/cryptroot"
 sed -i "s/^GRUB_CMDLINE_LINUX_DEFAULT=\"[^\"]*/& \${appendix}/" /etc/default/grub
 sed -i '/GRUB_ENABLE_CRYPTODISK=y/s/^#//g' /etc/default/grub
 update-initramfs -c -k all
-grub-install --efi-directory=/boot/efi
+grub-install --target=x86_64-efi --efi-directory=/boot/efi
 update-grub
 EOF
 umount -R /media/root
