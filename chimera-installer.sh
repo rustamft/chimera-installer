@@ -29,11 +29,31 @@ while [[ -z $password_encryption ]] || [[ $password_encryption != $password_encr
   read -s -p "Please repeat to confirm: " password_encryption_confirmation
   printf "\n"
 done
-while [[ -z $password_root ]] || [[ $password_root != $password_root_confirmation ]]; do
-  read -s -p "Enter the root password: " password_root
+while [[ -z $user_name ]]; do
+  read -s -p "Enter a new administrator name: " user_name
   printf "\n"
-  read -s -p "Please repeat to confirm: " password_root_confirmation
+done
+while [[ -z $password_user ]] || [[ $password_user != $password_user_confirmation ]]; do
+  read -s -p "Enter the administrator password: " password_user
   printf "\n"
+  read -s -p "Please repeat to confirm: " password_user_confirmation
+  printf "\n"
+done
+while [[ -z $host_name ]]; do
+  read -s -p "Enter the host name: " host_name
+  printf "\n"
+done
+while [[ $kernel_type != "lts" ]] && [[ $kernel_type != "stable" ]]; do
+  printf "Choose kernel type:\n  1) LTS\n  2) Stable\n"
+  read kernel_type
+  case $kernel_type in
+    "1")
+      desktop_environment="lts" ;;
+    "2")
+      desktop_environment="stable" ;;
+    *)
+      unset desktop_environment ;;
+  esac
 done
 while [[ -z $is_swap_required ]]; do
   read -p "Would you like zRAM and SWAP to be configured? [Y/n] " is_swap_required
@@ -47,9 +67,6 @@ while [[ -z $is_swap_required ]]; do
       unset is_swap_required
       ;;
   esac
-done
-while [[ $kernel_type != "lts" ]] && [[ $kernel_type != "stable" ]]; do
-  read -p "What kernel would you like? [lts/stable]: " kernel_type
 done
 fdisk /dev/$disk << EOF
 g
@@ -78,8 +95,12 @@ mount /dev/$disk_partition_1 /media/root/boot
 chmod 755 /media/root
 chimera-bootstrap /media/root
 chimera-chroot /media/root << EOF
-echo -n $password_root | passwd --stdin root
-apk add linux-$kernel_type grub-x86_64-efi
+apk add linux-$kernel_type grub-x86_64-efi cryptsetup
+echo -n $password_user | passwd --stdin root
+useradd $user_name
+echo -n $password_user | passwd --stdin $user_name
+usermod -a -G wheel,kvm,plugdev $user_name
+echo $host_name > /etc/hostname
 genfstab / >> /etc/fstab
 update-initramfs -c -k all
 grub-install --efi-directory=/boot/efi
