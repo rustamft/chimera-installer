@@ -43,16 +43,56 @@ while [[ -z $host_name ]]; do
   read -s -p "Enter the host name: " host_name
   printf "\n"
 done
+packages="grub-x86_64-efi cryptsetup"
 while [[ $kernel_type != "lts" ]] && [[ $kernel_type != "stable" ]]; do
   printf "Choose kernel type:\n  1) LTS\n  2) Stable\n"
   read kernel_type
   case $kernel_type in
     "1")
-      desktop_environment="lts" ;;
+      kernel_type="lts"
+      packages="$packages linux-lts"
+      ;;
     "2")
-      desktop_environment="stable" ;;
+      kernel_type="stable"
+      packages="$packages linux-stable"
+      ;;
     *)
+      printf "This is not an option\n"
       unset desktop_environment ;;
+  esac
+done
+while [[ -z $desktop_environment ]]; do
+  printf "Choose installation type:\n  1) Only basic services for a desktop environment\n  2) Minimal GNOME\n  3) Minimal KDE\n"
+  read desktop_environment
+  case $desktop_environment in
+    "1")
+      desktop_environment="Basic" ;;
+    "2")
+      desktop_environment="GNOME"
+      packages="$packages gnome tlp"
+      ;;
+    "3")
+      desktop_environment="KDE"
+      packages="$packages plasma-desktop tlp"
+      ;;
+    *)
+      printf "This is not an option\n"
+      unset desktop_environment ;;
+  esac
+done
+while [[ -z $is_flatpak_required ]]; do
+  read -p "Is Flatpak installation required? [Y/n] " is_flatpak_required
+  case $is_flatpak_required in
+    ""|"Y"|"y")
+      is_flatpak_required=true
+      packages="$packages flatpak"
+      ;;
+    "N"|"n")
+      is_flatpak_required=false ;;
+    *)
+      printf "This is not an option\n"
+      unset is_flatpak_required
+      ;;
   esac
 done
 while [[ -z $is_swap_required ]]; do
@@ -95,15 +135,18 @@ mount /dev/$disk_partition_1 /media/root/boot
 chmod 755 /media/root
 chimera-bootstrap /media/root
 chimera-chroot /media/root << EOF
-apk add linux-$kernel_type grub-x86_64-efi cryptsetup
 echo -n $password_user | passwd --stdin root
 useradd $user_name
 echo -n $password_user | passwd --stdin $user_name
 usermod -a -G wheel,kvm,plugdev $user_name
+apk add $packages
+if $is_flatpak_required; then
+  flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
+fi
 echo $host_name > /etc/hostname
 genfstab / >> /etc/fstab
 uuid=$(blkid -o value -s UUID /dev/mapper/cryptroot)
-appendix="cryptdevice=UUID=$uuid:cryptroot root=\/dev\/mapper\/cryptroot"
+appendix="cryptdevice=UUID=\${uuid}:cryptroot root=\/dev\/mapper\/cryptroot"
 sed -i "s/^GRUB_CMDLINE_LINUX_DEFAULT=\"[^\"]*/& \${appendix}/" /etc/default/grub
 sed -i '/GRUB_ENABLE_CRYPTODISK=y/s/^#//g' /etc/default/grub
 update-initramfs -c -k all
