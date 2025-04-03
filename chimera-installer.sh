@@ -30,7 +30,7 @@ while [[ -z $password_encryption ]] || [[ $password_encryption != $password_encr
   printf "\n"
 done
 while [[ -z $user_name ]]; do
-  read -s -p "Enter a new administrator name: " user_name
+  read -p "Enter a new administrator name: " user_name
   printf "\n"
 done
 while [[ -z $password_user ]] || [[ $password_user != $password_user_confirmation ]]; do
@@ -40,7 +40,7 @@ while [[ -z $password_user ]] || [[ $password_user != $password_user_confirmatio
   printf "\n"
 done
 while [[ -z $host_name ]]; do
-  read -s -p "Enter the host name: " host_name
+  read -p "Enter the host name: " host_name
   printf "\n"
 done
 packages="grub-x86_64-efi cryptsetup"
