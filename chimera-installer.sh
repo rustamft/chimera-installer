@@ -102,7 +102,13 @@ echo -n $password_user | passwd --stdin $user_name
 usermod -a -G wheel,kvm,plugdev $user_name
 echo $host_name > /etc/hostname
 genfstab / >> /etc/fstab
+uuid=$(blkid -o value -s UUID /dev/mapper/cryptroot)
+appendix="cryptdevice=UUID=$uuid:cryptroot root=\/dev\/mapper\/cryptroot"
+sed -i "s/^GRUB_CMDLINE_LINUX_DEFAULT=\"[^\"]*/& \${appendix}/" /etc/default/grub
+sed -i '/GRUB_ENABLE_CRYPTODISK=y/s/^#//g' /etc/default/grub
 update-initramfs -c -k all
 grub-install --efi-directory=/boot/efi
 update-grub
 EOF
+umount -R /media/root
+cryptsetup luksClose /dev/mapper/cryptroot
