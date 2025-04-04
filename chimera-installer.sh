@@ -108,6 +108,7 @@ while [[ -z $is_swap_required ]]; do
       ;;
   esac
 done
+wipefs -a /dev/$disk
 fdisk /dev/$disk << EOF
 g
 n
