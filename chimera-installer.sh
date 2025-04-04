@@ -99,7 +99,11 @@ while [[ -z $is_swap_required ]]; do
   read -p "Would you like zRAM and SWAP to be configured? [Y/n] " is_swap_required
   case $is_swap_required in
     ""|"Y"|"y")
-      is_swap_required=true ;;
+      is_swap_required=true
+      while [[ ! $swap_size =~ '^[0-9]+$' ]]; do
+        read -p "Swap size (Gb): " swap_size
+      done
+      ;;
     "N"|"n")
       is_swap_required=false ;;
     *)
@@ -151,6 +155,12 @@ case $desktop_environment in
 esac
 if $is_flatpak_required; then
   flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
+fi
+if $is_swap_required; then
+  fallocate -l ${swap_size}G /swapfile
+  chmod 600 /swapfile
+  mkswap /swapfile
+  echo "/swapfile swap swap defaults 0 0" >> /etc/fstab
 fi
 echo $host_name > /etc/hostname
 genfstab / >> /etc/fstab
