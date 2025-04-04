@@ -44,6 +44,23 @@ while [[ -z $host_name ]]; do
   printf "\n"
 done
 packages="grub-x86_64-efi cryptsetup-scripts dbus networkmanager bluez pipewire xserver-xorg-minimal"
+while [[ $processor_type != "amd" ]] && [[ $processor_type != "intel" ]]; do
+  printf "Choose processor type:\n  1) AMD\n  2) Intel\n"
+  read processor_type
+  case $processor_type in
+    "1")
+      processor_type="amd"
+      packages="$packages ucode-amd"
+      ;;
+    "2")
+      processor_type="intel"
+      packages="$packages ucode-intel"
+      ;;
+    *)
+      printf "This is not an option\n"
+      unset desktop_environment ;;
+  esac
+done
 while [[ $kernel_type != "lts" ]] && [[ $kernel_type != "stable" ]]; do
   printf "Choose kernel type:\n  1) LTS\n  2) Stable\n"
   read kernel_type
