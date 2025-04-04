@@ -163,6 +163,7 @@ EOF
 umount -R /media/root
 cryptsetup luksClose /dev/mapper/cryptroot
 cat << EOF
+
 ###########################################
 ###                                     ###
 ###   Chimera Linux is ready to boot!   ###
