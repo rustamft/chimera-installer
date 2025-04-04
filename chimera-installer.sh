@@ -158,12 +158,15 @@ if [[ ! -e /dev/$disk_partition_1 ]] || [[ ! -e /dev/$disk_partition_2 ]] || [[ 
   exit
 fi
 
-# Partitions mounting
+# Partition mounting
 
 mkdir -p /media/root/boot/efi
 mount /dev/mapper/cryptroot /media/root
 mount /dev/$disk_partition_1 /media/root/boot
 chmod 755 /media/root
+
+# Installation
+
 chimera-bootstrap /media/root
 chimera-chroot /media/root << EOF
 echo -n $password_user | passwd --stdin root
@@ -199,6 +202,9 @@ update-initramfs -c -k all
 grub-install --target=x86_64-efi --efi-directory=/boot/efi
 update-grub
 EOF
+
+# Finalizing
+
 umount -R /media/root
 cryptsetup luksClose /dev/mapper/cryptroot
 cat << EOF
