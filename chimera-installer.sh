@@ -43,7 +43,7 @@ while [[ -z $host_name ]]; do
   read -p "Enter the host name: " host_name
   printf "\n"
 done
-packages="grub-x86_64-efi cryptsetup-scripts"
+packages="grub-x86_64-efi cryptsetup-scripts dbus networkmanager pipewire xserver-xorg-minimal"
 while [[ $kernel_type != "lts" ]] && [[ $kernel_type != "stable" ]]; do
   printf "Choose kernel type:\n  1) LTS\n  2) Stable\n"
   read kernel_type
@@ -140,6 +140,7 @@ useradd $user_name
 echo -n $password_user | passwd --stdin $user_name
 usermod -a -G wheel,kvm,plugdev $user_name
 apk add $packages
+dinitctl enable networkmanager
 case $desktop_environment in
   "GNOME")
     dinitctl enable gdm ;;
