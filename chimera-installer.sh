@@ -15,6 +15,9 @@ Your current disks and partitions:
 EOF
 lsblk -I 8,253,254,259
 echo ""
+
+# User choices
+
 while [[ -z $disk ]] || [[ ! -e /dev/$disk ]]; do
   read -p "Enter a valid disk name (e.g. sda or nvme0n1): " disk
 done
@@ -129,6 +132,9 @@ while [[ -z $is_swap_required ]]; do
       ;;
   esac
 done
+
+# Disk partitioning
+
 wipefs -a /dev/$disk
 fdisk /dev/$disk << EOF
 g
@@ -151,6 +157,9 @@ if [[ ! -e /dev/$disk_partition_1 ]] || [[ ! -e /dev/$disk_partition_2 ]] || [[ 
   echo "${disk} is not partitioned correctly"
   exit
 fi
+
+# Partitions mounting
+
 mkdir -p /media/root/boot/efi
 mount /dev/mapper/cryptroot /media/root
 mount /dev/$disk_partition_1 /media/root/boot
