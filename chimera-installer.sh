@@ -61,7 +61,7 @@ while [[ $processor_type != "amd" ]] && [[ $processor_type != "intel" ]]; do
       ;;
     *)
       printf "This is not an option\n"
-      unset desktop_environment ;;
+      unset processor_type ;;
   esac
 done
 while [[ $kernel_type != "lts" ]] && [[ $kernel_type != "stable" ]]; do
@@ -78,7 +78,7 @@ while [[ $kernel_type != "lts" ]] && [[ $kernel_type != "stable" ]]; do
       ;;
     *)
       printf "This is not an option\n"
-      unset desktop_environment ;;
+      unset kernel_type ;;
   esac
 done
 while [[ -z $desktop_environment ]]; do
@@ -88,11 +88,11 @@ while [[ -z $desktop_environment ]]; do
     "1")
       desktop_environment="Basic" ;;
     "2")
-      desktop_environment="GNOME"
+      desktop_environment="gnome"
       packages="$packages gdm gnome tlp"
       ;;
     "3")
-      desktop_environment="KDE"
+      desktop_environment="kde"
       packages="$packages sddm plasma-desktop tlp"
       ;;
     *)
@@ -167,37 +167,39 @@ chmod 755 /media/root
 
 # Installation
 
-echo y | chimera-bootstrap /media/root
+chimera-bootstrap /media/root
 chimera-chroot /media/root << EOF
 echo -n $password_user | passwd --stdin root
 useradd $user_name
 echo -n $password_user | passwd --stdin $user_name
 usermod -a -G wheel,kvm,plugdev $user_name
-apk add $packages
+echo y | apk add $packages
 dinitctl enable networkmanager
 dinitctl enable bluetoothd
 case $desktop_environment in
-  "GNOME")
+  "gnome")
     dinitctl enable gdm ;;
-  "KDE")
+  "kde")
     dinitctl enable sddm ;;
 esac
 if $is_flatpak_required; then
   flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
 fi
+genfstab / >> /etc/fstab
+sed -i '' 's/ [^ ]+ 0 0/ defaults 0 0/' /etc/fstab
+echo '/dev/$disk_partition_1 /boot vfat defaults 0 2' >> /etc/fstab
 if $is_swap_required; then
   fallocate -l ${swap_size}G /swapfile
   chmod 600 /swapfile
   mkswap /swapfile
-  echo "/swapfile swap swap defaults 0 0" >> /etc/fstab
+  echo '/swapfile swap swap defaults 0 0' >> /etc/fstab
 fi
 echo $host_name > /etc/hostname
-genfstab / >> /etc/fstab
 echo cryptroot /dev/$disk_partition_2 none luks > /etc/crypttab
 uuid=$(blkid -o value -s UUID /dev/mapper/cryptroot)
 appendix="cryptdevice=UUID=\${uuid}:cryptroot root=\/dev\/mapper\/cryptroot"
-sed -i "s/^GRUB_CMDLINE_LINUX_DEFAULT=\"[^\"]*/& \${appendix}/" /etc/default/grub
-sed -i '/GRUB_ENABLE_CRYPTODISK=y/s/^#//g' /etc/default/grub
+sed -i '' "s/^GRUB_CMDLINE_LINUX_DEFAULT=\"[^\"]*/& \${appendix}/" /etc/default/grub
+sed -i '' '/GRUB_ENABLE_CRYPTODISK=y/s/^#//g' /etc/default/grub
 update-initramfs -c -k all
 grub-install --target=x86_64-efi --efi-directory=/boot/efi
 update-grub
