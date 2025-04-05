@@ -173,6 +173,7 @@ echo -n $password_user | passwd --stdin root
 useradd $user_name
 echo -n $password_user | passwd --stdin $user_name
 usermod -a -G wheel,kvm,plugdev $user_name
+echo $host_name > /etc/hostname
 echo y | apk add $packages
 dinitctl enable networkmanager
 dinitctl enable bluetoothd
@@ -194,7 +195,6 @@ if $is_swap_required; then
   mkswap /swapfile
   echo '/swapfile swap swap defaults 0 0' >> /etc/fstab
 fi
-echo $host_name > /etc/hostname
 echo cryptroot /dev/$disk_partition_2 none luks > /etc/crypttab
 uuid=$(blkid -o value -s UUID /dev/mapper/cryptroot)
 appendix="cryptdevice=UUID=\${uuid}:cryptroot root=\/dev\/mapper\/cryptroot"
