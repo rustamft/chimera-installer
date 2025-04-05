@@ -197,7 +197,7 @@ echo cryptroot /dev/$disk_partition_2 none luks > /etc/crypttab
 uuid=$(blkid -o value -s UUID /dev/mapper/cryptroot)
 appendix="cryptdevice=UUID=\${uuid}:cryptroot root=\/dev\/mapper\/cryptroot"
 sed -i '' "s/^GRUB_CMDLINE_LINUX_DEFAULT=\"[^\"]*/& \${appendix}/" /etc/default/grub
-sed -i '' '/GRUB_ENABLE_CRYPTODISK=y/s/^#//g' /etc/default/grub
+echo 'GRUB_ENABLE_CRYPTODISK=y' >> /etc/default/grub
 update-initramfs -c -k all
 mkdir /boot/efi
 grub-install --target=x86_64-efi --efi-directory=/boot/efi
