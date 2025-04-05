@@ -193,10 +193,10 @@ if $is_swap_required; then
   mkswap /swapfile
   echo '/swapfile swap swap defaults 0 0' >> /etc/fstab
 fi
-echo crypt /dev/$disk_partition_2 none luks > /etc/crypttab
-uuid=$(blkid -o value -s UUID /dev/mapper/cryptroot)
-appendix="cryptdevice=UUID=\${uuid}:cryptroot root=\/dev\/mapper\/cryptroot"
-sed -i '' "s/^GRUB_CMDLINE_LINUX_DEFAULT=\"[^\"]*/& \${appendix}/" /etc/default/grub
+cryptroot_uuid=$(blkid -o value -s UUID /dev/mapper/cryptroot)
+echo 'crypt UUID=$cryptroot_uuid none luks' > /etc/crypttab
+grub_cmdline_appendix="cryptdevice=UUID=\${cryptroot_uuid}:cryptroot root=\/dev\/mapper\/cryptroot"
+sed -i '' "s/^GRUB_CMDLINE_LINUX_DEFAULT=\"[^\"]*/& \${grub_cmdline_appendix}/" /etc/default/grub
 echo 'GRUB_ENABLE_CRYPTODISK=y' >> /etc/default/grub
 update-initramfs -c -k all
 grub-install --target=x86_64-efi --efi-directory=/boot
