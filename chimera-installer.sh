@@ -46,7 +46,7 @@ while [[ -z $host_name ]]; do
   read -p "Enter the host name: " host_name
   printf "\n"
 done
-packages="bash grub-x86_64-efi cryptsetup-scripts dbus networkmanager bluez pipewire xserver-xorg-minimal"
+packages="grub-x86_64-efi cryptsetup-scripts dbus networkmanager bluez pipewire xserver-xorg-minimal"
 while [[ $processor_type != "amd" ]] && [[ $processor_type != "intel" ]]; do
   printf "Choose processor type:\n  1) AMD\n  2) Intel\n"
   read processor_type
@@ -167,7 +167,7 @@ chmod 755 /media/root
 
 # Installation
 
-chimera-bootstrap /media/root
+echo y | chimera-bootstrap /media/root
 chimera-chroot /media/root << EOF
 echo -n $password_user | passwd --stdin root
 useradd $user_name
