@@ -158,6 +158,7 @@ fi
 
 # Partition mounting
 
+mkdir /media/root
 mount /dev/mapper/cryptroot /media/root
 chmod 755 /media/root
 mkdir /media/root/boot
