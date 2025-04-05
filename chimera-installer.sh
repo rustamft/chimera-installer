@@ -185,7 +185,7 @@ esac
 if $is_flatpak_required; then
   flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
 fi
-genfstab / >> /etc/fstab
+genfstab -U / >> /etc/fstab
 sed -i '' 's/ [^ ]* 0 / defaults 0 /' /etc/fstab
 if $is_swap_required; then
   fallocate -l ${swap_size}G /swapfile
