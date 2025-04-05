@@ -158,10 +158,10 @@ fi
 
 # Partition mounting
 
-mkdir -p /media/root/boot/efi
 mount /dev/mapper/cryptroot /media/root
-mount /dev/$disk_partition_1 /media/root/boot
 chmod 755 /media/root
+mkdir /media/root/boot
+mount /dev/$disk_partition_1 /media/root/boot
 
 # Installation
 
@@ -199,6 +199,7 @@ appendix="cryptdevice=UUID=\${uuid}:cryptroot root=\/dev\/mapper\/cryptroot"
 sed -i '' "s/^GRUB_CMDLINE_LINUX_DEFAULT=\"[^\"]*/& \${appendix}/" /etc/default/grub
 sed -i '' '/GRUB_ENABLE_CRYPTODISK=y/s/^#//g' /etc/default/grub
 update-initramfs -c -k all
+mkdir /boot/efi
 grub-install --target=x86_64-efi --efi-directory=/boot/efi
 update-grub
 EOF
