@@ -193,7 +193,7 @@ if $is_swap_required; then
   mkswap /swapfile
   echo '/swapfile swap swap defaults 0 0' >> /etc/fstab
 fi
-echo cryptroot /dev/$disk_partition_2 none luks > /etc/crypttab
+echo crypt /dev/$disk_partition_2 none luks > /etc/crypttab
 uuid=$(blkid -o value -s UUID /dev/mapper/cryptroot)
 appendix="cryptdevice=UUID=\${uuid}:cryptroot root=\/dev\/mapper\/cryptroot"
 sed -i '' "s/^GRUB_CMDLINE_LINUX_DEFAULT=\"[^\"]*/& \${appendix}/" /etc/default/grub
