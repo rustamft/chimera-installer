@@ -113,12 +113,15 @@ while [[ -z $is_flatpak_required ]]; do
   esac
 done
 while [[ -z $is_swap_required ]]; do
-  read -p "Would you like zRAM device and SWAP file to be configured? [Y/n] " is_swap_required
+  read -p "Would you like Swap file and zRAM device to be configured? [Y/n] " is_swap_required
   case $is_swap_required in
     ""|"Y"|"y")
       is_swap_required=true
       while [[ ! $swap_size =~ '^[0-9]+$' ]]; do
         read -p "Swap size (Gb): " swap_size
+      done
+      while [[ ! $zram_size =~ '^[0-9]+$' ]]; do
+        read -p "zRAM size (Gb): " zram_size
       done
       ;;
     "N"|"n")
@@ -194,6 +197,12 @@ if $is_swap_required; then
   chmod 600 /swapfile
   mkswap /swapfile
   echo '/swapfile swap swap defaults 0 0' >> /etc/fstab
+  cat > /etc/rc.local << ZRAM
+  modprobe zram
+  zramctl /dev/zram0 --algorithm zstd --size ${zram_size}G
+  mkswap -U clear /dev/zram0
+  swapon --discard --priority 100 /dev/zram0
+  ZRAM
 fi
 disk_partition_2_uuid=$(blkid -o value -s UUID /dev/$disk_partition_2)
 echo crypt UUID=\$disk_partition_2_uuid none luks > /etc/crypttab
