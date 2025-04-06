@@ -196,12 +196,11 @@ if ${is_swap_required}; then
   chmod 600 /swapfile
   mkswap /swapfile
   echo '/swapfile swap swap defaults 0 0' >> /etc/fstab
-  cat > /etc/rc.local <<- ZRAM
-  modprobe zram
-  zramctl /dev/zram0 --algorithm zstd --size ${zram_size}G
-  mkswap -U clear /dev/zram0
-  swapon --discard --priority 100 /dev/zram0
-  ZRAM
+  touch /etc/rc.local
+  echo 'modprobe zram' >> /etc/rc.local
+  echo 'zramctl /dev/zram0 --algorithm zstd --size ${zram_size}G' >> /etc/rc.local
+  echo 'mkswap -U clear /dev/zram0' >> /etc/rc.local
+  echo 'swapon --discard --priority 100 /dev/zram0' >> /etc/rc.local
 fi
 disk_partition_2_uuid=$(blkid -o value -s UUID /dev/${disk_partition_2})
 echo cryptroot UUID=\${disk_partition_2_uuid} none luks > /etc/crypttab
