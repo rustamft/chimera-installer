@@ -35,10 +35,10 @@ done
 while [[ -z $user_name ]]; do
   read -p "Enter a new administrator name: " user_name
 done
-while [[ -z $password_user ]] || [[ $password_user != $password_user_confirmation ]]; do
-  read -s -p "Enter the administrator password: " password_user
+while [[ -z $password_admin ]] || [[ $password_admin != $password_admin_confirmation ]]; do
+  read -s -p "Enter the administrator password: " password_admin
   printf "\n"
-  read -s -p "Please repeat to confirm: " password_user_confirmation
+  read -s -p "Please repeat to confirm: " password_admin_confirmation
   printf "\n"
 done
 while [[ -z $host_name ]]; do
@@ -167,15 +167,15 @@ mount /dev/$disk_partition_1 /media/root/boot
 
 chimera-bootstrap /media/root
 chimera-chroot /media/root << EOF
-echo -n $password_user | passwd --stdin root
-useradd $user_name
-echo -n $password_user | passwd --stdin $user_name
-usermod -a -G wheel,kvm,plugdev $user_name
+echo -n $password_admin | passwd --stdin root
+useradd -G wheel,kvm,plugdev $user_name
+echo -n $password_admin | passwd --stdin $user_name
 echo $host_name > /etc/hostname
 echo y | apk add chimera-repo-user
 apk update
-packages='grub-x86_64-efi cryptsetup-scripts dbus networkmanager bluez pipewire xserver-xorg-minimal $packages'
+packages='bash grub-x86_64-efi cryptsetup-scripts dbus networkmanager bluez pipewire xserver-xorg-minimal $packages'
 echo y | apk add $packages
+chsh -s /bin/bash $user_name
 dinitctl -o enable networkmanager
 dinitctl -o enable bluetoothd
 case $desktop_environment in
