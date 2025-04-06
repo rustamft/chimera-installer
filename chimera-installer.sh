@@ -44,7 +44,6 @@ done
 while [[ -z $host_name ]]; do
   read -p "Enter the host name: " host_name
 done
-packages="grub-x86_64-efi cryptsetup-scripts dbus networkmanager bluez pipewire xserver-xorg-minimal"
 while [[ $processor_type != "amd" ]] && [[ $processor_type != "intel" ]]; do
   printf "Choose processor type:\n  1) AMD\n  2) Intel\n"
   read processor_type
@@ -80,14 +79,14 @@ while [[ $kernel_type != "lts" ]] && [[ $kernel_type != "stable" ]]; do
   esac
 done
 while [[ -z $desktop_environment ]]; do
-  printf "Choose installation type:\n  1) Only basic services for a desktop environment\n  2) GNOME\n  3) KDE\n"
+  printf "Choose desktop environment:\n  1) None\n  2) Minimal GNOME\n  3) KDE\n"
   read desktop_environment
   case $desktop_environment in
     "1")
-      desktop_environment="Basic" ;;
+      desktop_environment="none" ;;
     "2")
       desktop_environment="gnome"
-      packages="$packages gdm gnome tlp kitty"
+      packages="$packages gdm gnome-desktop tlp kitty file-roller nautilus"
       ;;
     "3")
       desktop_environment="kde"
@@ -114,7 +113,7 @@ while [[ -z $is_flatpak_required ]]; do
   esac
 done
 while [[ -z $is_swap_required ]]; do
-  read -p "Would you like zRAM and SWAP to be configured? [Y/n] " is_swap_required
+  read -p "Would you like zRAM device and SWAP file to be configured? [Y/n] " is_swap_required
   case $is_swap_required in
     ""|"Y"|"y")
       is_swap_required=true
@@ -175,14 +174,15 @@ usermod -a -G wheel,kvm,plugdev $user_name
 echo $host_name > /etc/hostname
 echo y | apk add chimera-repo-user
 apk update
+packages='grub-x86_64-efi cryptsetup-scripts dbus networkmanager bluez pipewire xserver-xorg-minimal $packages'
 echo y | apk add $packages
-dinitctl enable networkmanager
-dinitctl enable bluetoothd
+dinitctl -o enable networkmanager
+dinitctl -o enable bluetoothd
 case $desktop_environment in
   "gnome")
-    dinitctl enable gdm ;;
+    dinitctl -o enable gdm ;;
   "kde")
-    dinitctl enable sddm ;;
+    dinitctl -o enable sddm ;;
 esac
 if $is_flatpak_required; then
   flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
