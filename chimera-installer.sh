@@ -196,7 +196,7 @@ if ${is_swap_required}; then
   chmod 600 /swapfile
   mkswap /swapfile
   echo '/swapfile swap swap defaults 0 0' >> /etc/fstab
-  cat > /etc/rc.local << ZRAM
+  cat > /etc/rc.local <<- ZRAM
   modprobe zram
   zramctl /dev/zram0 --algorithm zstd --size ${zram_size}G
   mkswap -U clear /dev/zram0
