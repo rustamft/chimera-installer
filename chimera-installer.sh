@@ -87,11 +87,11 @@ while [[ -z $desktop_environment ]]; do
       desktop_environment="Basic" ;;
     "2")
       desktop_environment="gnome"
-      packages="$packages gdm gnome tlp"
+      packages="$packages gdm gnome tlp kitty"
       ;;
     "3")
       desktop_environment="kde"
-      packages="$packages sddm plasma-desktop tlp"
+      packages="$packages sddm plasma-desktop tlp kitty"
       ;;
     *)
       printf "This is not an option\n"
@@ -173,6 +173,8 @@ useradd $user_name
 echo -n $password_user | passwd --stdin $user_name
 usermod -a -G wheel,kvm,plugdev $user_name
 echo $host_name > /etc/hostname
+echo y | apk add chimera-repo-user
+apk update
 echo y | apk add $packages
 dinitctl enable networkmanager
 dinitctl enable bluetoothd
