@@ -170,14 +170,13 @@ mount /dev/$disk_partition_1 /media/root/boot
 
 chimera-bootstrap /media/root
 chimera-chroot /media/root << EOF
-echo -n $password_admin | passwd --stdin root
+echo -n ${password_admin} | passwd --stdin root
 useradd -G wheel,kvm,plugdev $user_name
-echo -n $password_admin | passwd --stdin $user_name
+echo -n ${password_admin} | passwd --stdin ${user_name}
 echo $host_name > /etc/hostname
 echo y | apk add chimera-repo-user
 apk update
-packages='bash grub-x86_64-efi cryptsetup-scripts dbus networkmanager bluez pipewire xserver-xorg-minimal $packages'
-echo y | apk add $packages
+echo y | apk add bash grub-x86_64-efi cryptsetup-scripts dbus networkmanager bluez pipewire xserver-xorg-minimal ${packages}
 chsh -s /bin/bash $user_name
 dinitctl -o enable networkmanager
 dinitctl -o enable bluetoothd
@@ -204,8 +203,8 @@ if $is_swap_required; then
   swapon --discard --priority 100 /dev/zram0
   ZRAM
 fi
-disk_partition_2_uuid=$(blkid -o value -s UUID /dev/$disk_partition_2)
-echo crypt UUID=\$disk_partition_2_uuid none luks > /etc/crypttab
+disk_partition_2_uuid=$(blkid -o value -s UUID /dev/${disk_partition_2})
+echo cryptroot UUID=\${disk_partition_2_uuid} none luks > /etc/crypttab
 cryptroot_uuid=$(blkid -o value -s UUID /dev/mapper/cryptroot)
 grub_cmdline_appendix="cryptdevice=UUID=\${cryptroot_uuid}:cryptroot root=\/dev\/mapper\/cryptroot"
 sed -i '' "s/^GRUB_CMDLINE_LINUX_DEFAULT=\"[^\"]*/& \${grub_cmdline_appendix}/" /etc/default/grub
