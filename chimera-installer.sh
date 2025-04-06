@@ -117,10 +117,10 @@ while [[ -z $is_swap_required ]]; do
   case $is_swap_required in
     ""|"Y"|"y")
       is_swap_required=true
-      while [[ ! $swap_size =~ '^[0-9]+$' ]]; do
+      while ! [ $swap_size -eq $swap_size 2>/dev/null -o $swap_size -eq 0 2>/dev/null ]; do
         read -p "Swap size (Gb): " swap_size
       done
-      while [[ ! $zram_size =~ '^[0-9]+$' ]]; do
+      while ! [ $zram_size -eq $zram_size 2>/dev/null -o $zram_size -eq 0 2>/dev/null ]; do
         read -p "zRAM size (Gb): " zram_size
       done
       ;;
