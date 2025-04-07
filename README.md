@@ -1,4 +1,4 @@
-This is used to automate installation of Chimera Linux.
+This is used to automate installation of the [Chimera Linux](https://chimera-linux.org).
 
 ### The chosen disk is divided in 2 partitions:
 - boot (also contains EFI) - 1 Gb - unencrypted FAT32
@@ -11,3 +11,5 @@ wget https://raw.githubusercontent.com/rustamft/chimera-installer/refs/heads/mai
 chmod +x 1.sh
 ./1.sh
 ```
+
+If you have any questions, please refer to the [Chimera Linux Documentation](https://chimera-linux.org/docs).
