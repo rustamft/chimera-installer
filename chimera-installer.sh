@@ -36,7 +36,7 @@ while [[ -z $user_name ]]; do
   read -p "Enter a new administrator name: " user_name
 done
 while [[ -z $password_admin ]] || [[ $password_admin != $password_admin_confirmation ]]; do
-  read -s -p "Enter the administrator password: " password_admin
+  read -s -p "Enter the administrator password (also used for the root): " password_admin
   printf "\n"
   read -s -p "Please repeat to confirm: " password_admin_confirmation
   printf "\n"
