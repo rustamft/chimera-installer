@@ -171,7 +171,8 @@ mount /dev/$disk_partition_1 /media/root/boot
 chimera-bootstrap /media/root
 chimera-chroot /media/root << EOF
 echo -n ${password_admin} | passwd --stdin root
-useradd --create-home -s /bin/bash -G wheel,kvm,plugdev -p $(openssl passwd -6 ${password_admin}) ${user_name}
+useradd --create-home -s /bin/bash -G wheel,kvm,plugdev ${user_name}
+echo -n ${password_admin} | passwd --stdin ${user_name}
 echo ${host_name} > /etc/hostname
 echo y | apk add chimera-repo-user
 apk update
