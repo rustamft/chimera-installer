@@ -180,6 +180,7 @@ echo y | apk add bash grub-x86_64-efi cryptsetup-scripts dbus networkmanager blu
 chsh -s /bin/bash ${user_name}
 dinitctl -o enable networkmanager
 dinitctl -o enable bluetoothd
+dinitctl -o enable tlp
 case ${desktop_environment} in
   "gnome")
     dinitctl -o enable gdm ;;
