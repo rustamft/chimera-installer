@@ -176,7 +176,7 @@ echo -n ${password_admin} | passwd --stdin ${user_name}
 echo ${host_name} > /etc/hostname
 echo y | apk add chimera-repo-user
 apk update
-echo y | apk add bash grub-x86_64-efi cryptsetup-scripts dbus networkmanager bluez pipewire xserver-xorg-minimal xdg-user-dirs ${packages}
+echo y | apk add bash grub-x86_64-efi cryptsetup-scripts dbus networkmanager networkmanager-openvpn bluez pipewire xserver-xorg-minimal xdg-user-dirs ${packages}
 dinitctl -o enable networkmanager
 dinitctl -o enable bluetoothd
 dinitctl -o enable tlp
