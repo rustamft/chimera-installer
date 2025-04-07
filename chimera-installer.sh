@@ -197,6 +197,7 @@ if ${is_swap_required}; then
   mkswap /swapfile
   echo '/swapfile swap swap defaults 0 0' >> /etc/fstab
   printf '#!/bin/bash\n\nzramctl /dev/zram0 --algorithm zstd --size ${zram_size}G\nmkswap -U clear /dev/zram0\nswapon --discard --priority 100 /dev/zram0\n' > /etc/dinit.d/zram.sh
+  chmod +x /etc/dinit.d/zram.sh
   printf 'type = scripted\ncommand = /etc/dinit.d/zram.sh\ndepends-on = local.target\n' > /etc/dinit.d/zram
   dinitctl -o enable zram
 fi
