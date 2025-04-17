@@ -27,7 +27,7 @@ fi
 disk_partition_1="${disk}${partition_number_prefix}1"
 disk_partition_2="${disk}${partition_number_prefix}2"
 while [ -z $password_encryption ] || [ $password_encryption != $password_encryption_confirmation ]; do
-  stty -echo; IFS= read -r -p 'Enter a password for the ${disk_partition_2} partition encryption: ' password_encryption; stty echo
+  stty -echo; IFS= read -r -p "Enter a password for the ${disk_partition_2} partition encryption: " password_encryption; stty echo
   printf '\n'
   stty -echo; IFS= read -r -p 'Please repeat to confirm: ' password_encryption_confirmation; stty echo
   printf '\n'
