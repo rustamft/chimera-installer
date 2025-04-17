@@ -14,7 +14,7 @@ Your current disks and partitions:
 
 EOF
 lsblk -I 8,253,254,259
-echo ""
+echo ''
 
 # User choices
 
