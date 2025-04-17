@@ -48,7 +48,7 @@ unset password_admin_confirmation
 while [ -z $host_name ]; do
   read -p 'Enter the host name: ' host_name
 done
-while [ $processor_type != 'amd' ] && [ $processor_type != 'intel' ]; do
+while [ -z $processor_type ]; do
   printf 'Choose processor type:\n  1) AMD\n  2) Intel\n'
   read processor_type
   case $processor_type in
@@ -66,7 +66,7 @@ while [ $processor_type != 'amd' ] && [ $processor_type != 'intel' ]; do
       ;;
   esac
 done
-while [ $kernel_type != 'lts' ] && [ $kernel_type != 'stable' ]; do
+while [ -z $kernel_type ]; do
   printf 'Choose kernel type:\n  1) LTS\n  2) Stable\n'
   read kernel_type
   case $kernel_type in
