@@ -21,9 +21,11 @@ echo ""
 while [ -z $disk ] || [ ! -e /dev/$disk ]; do
   read -p 'Enter a valid disk name (e.g. sda or nvme0n1): ' disk
 done
-if [ $disk == *'nvme'* ]; then
-  partition_number_prefix='p'
-fi
+case $disk in
+  *'nvme'*)
+    partition_number_prefix='p'
+    ;;
+esac
 disk_partition_1="${disk}${partition_number_prefix}1"
 disk_partition_2="${disk}${partition_number_prefix}2"
 while [ -z $password_encryption ] || [ $password_encryption != $password_encryption_confirmation ]; do
@@ -60,7 +62,8 @@ while [ $processor_type != 'amd' ] && [ $processor_type != 'intel' ]; do
       ;;
     *)
       printf 'This is not an option\n'
-      unset processor_type ;;
+      unset processor_type
+      ;;
   esac
 done
 while [ $kernel_type != 'lts' ] && [ $kernel_type != 'stable' ]; do
@@ -77,7 +80,8 @@ while [ $kernel_type != 'lts' ] && [ $kernel_type != 'stable' ]; do
       ;;
     *)
       printf 'This is not an option\n'
-      unset kernel_type ;;
+      unset kernel_type
+      ;;
   esac
 done
 while [ -z $desktop_environment ]; do
@@ -85,7 +89,8 @@ while [ -z $desktop_environment ]; do
   read desktop_environment
   case $desktop_environment in
     '1')
-      desktop_environment='none' ;;
+      desktop_environment='none'
+      ;;
     '2')
       desktop_environment='gnome'
       packages="$packages gdm gnome-desktop xdg-desktop-portal-gnome gnome-shell-extensions gnome-system-monitor gnome-color-manager gnome-tweaks tlp kitty file-roller nautilus"
@@ -96,7 +101,8 @@ while [ -z $desktop_environment ]; do
       ;;
     *)
       printf 'This is not an option\n'
-      unset desktop_environment ;;
+      unset desktop_environment
+      ;;
   esac
 done
 while [ -z $is_flatpak_required ]; do
@@ -107,7 +113,8 @@ while [ -z $is_flatpak_required ]; do
       packages="$packages flatpak"
       ;;
     'N'|'n')
-      is_flatpak_required=false ;;
+      is_flatpak_required=false
+      ;;
     *)
       printf 'This is not an option\n'
       unset is_flatpak_required
@@ -127,7 +134,8 @@ while [ -z $is_swap_required ]; do
       done
       ;;
     'N'|'n')
-      is_swap_required=false ;;
+      is_swap_required=false
+      ;;
     *)
       printf 'This is not an option\n'
       unset is_swap_required
@@ -184,9 +192,11 @@ dinitctl -o enable bluetoothd
 dinitctl -o enable tlp
 case ${desktop_environment} in
   'gnome')
-    dinitctl -o enable gdm ;;
+    dinitctl -o enable gdm
+    ;;
   'kde')
-    dinitctl -o enable sddm ;;
+    dinitctl -o enable sddm
+    ;;
 esac
 if ${is_flatpak_required}; then
   flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
