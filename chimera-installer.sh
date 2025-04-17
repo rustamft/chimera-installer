@@ -181,12 +181,12 @@ mount /dev/$disk_partition_1 /media/root/boot
 chimera-bootstrap /media/root
 chimera-chroot /media/root << EOF
 echo -n ${password_admin} | passwd --stdin root
-useradd --create-home -s /bin/bash -G wheel,kvm,plugdev ${user_name}
+useradd --create-home -G wheel,kvm,plugdev ${user_name}
 echo -n ${password_admin} | passwd --stdin ${user_name}
 echo ${host_name} > /etc/hostname
 echo y | apk add chimera-repo-user
 apk update
-echo y | apk add bash grub-x86_64-efi cryptsetup-scripts dbus networkmanager networkmanager-openvpn bluez pipewire xserver-xorg-minimal xdg-user-dirs ${packages}
+echo y | apk add grub-x86_64-efi cryptsetup-scripts dbus networkmanager networkmanager-openvpn bluez pipewire xserver-xorg-minimal xdg-user-dirs ${packages}
 dinitctl -o enable networkmanager
 dinitctl -o enable bluetoothd
 dinitctl -o enable tlp
@@ -208,7 +208,7 @@ if ${is_swap_required}; then
   chmod 600 /swapfile
   mkswap /swapfile
   echo '/swapfile swap swap defaults 0 0' >> /etc/fstab
-  printf '#!/bin/bash\n\nmodprobe zram\nzramctl /dev/zram0 --algorithm zstd --size ${zram_size}G\nmkswap -U clear /dev/zram0\nswapon --discard --priority 100 /dev/zram0\n' > /etc/dinit.d/zram.sh
+  printf '#!/bin/sh\n\nmodprobe zram\nzramctl /dev/zram0 --algorithm zstd --size ${zram_size}G\nmkswap -U clear /dev/zram0\nswapon --discard --priority 100 /dev/zram0\n' > /etc/dinit.d/zram.sh
   chmod +x /etc/dinit.d/zram.sh
   printf 'type = scripted\ncommand = /etc/dinit.d/zram.sh\ndepends-on = local.target\n' > /etc/dinit.d/zram
   dinitctl -o enable zram
