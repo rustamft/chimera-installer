@@ -93,7 +93,7 @@ while [ -z $desktop_environment ]; do
       ;;
     '2')
       desktop_environment='gnome'
-      packages="$packages gdm gnome-desktop xdg-desktop-portal-gnome gnome-shell-extensions gnome-system-monitor gnome-color-manager gnome-tweaks tlp kitty file-roller nautilus"
+      packages="$packages gdm gnome-desktop xdg-desktop-portal-gnome gnome-shell-extensions gnome-system-monitor gnome-color-manager gnome-tweaks tlp kitty file-roller nautilus gvfs"
       ;;
     '3')
       desktop_environment='kde'
