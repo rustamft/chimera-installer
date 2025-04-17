@@ -38,7 +38,7 @@ unset password_encryption_confirmation
 while [ -z $user_name ]; do
   read -p 'Enter a new administrator name: ' user_name
 done
-while [ -z $password_admin ] || ! [ $password_admin = $password_admin_confirmation ]; do
+while [ -z $password_admin ] || [ $password_admin != $password_admin_confirmation ]; do
   stty -echo; IFS= read -r -p 'Enter the administrator password (also used for the root): ' password_admin; stty echo
   printf '\n'
   stty -echo; IFS= read -r -p 'Please repeat to confirm: ' password_admin_confirmation; stty echo
@@ -48,7 +48,7 @@ unset password_admin_confirmation
 while [ -z $host_name ]; do
   read -p 'Enter the host name: ' host_name
 done
-while ! [ $processor_type = 'amd' ] && ! [ $processor_type = 'intel' ]; do
+while [ $processor_type != 'amd' ] -a [ $processor_type != 'intel' ]; do
   printf 'Choose processor type:\n  1) AMD\n  2) Intel\n'
   read processor_type
   case $processor_type in
@@ -66,7 +66,7 @@ while ! [ $processor_type = 'amd' ] && ! [ $processor_type = 'intel' ]; do
       ;;
   esac
 done
-while ! [ $kernel_type = 'lts' ] && ! [ $kernel_type = 'stable' ]; do
+while [ $kernel_type != 'lts' ] -a [ $kernel_type != 'stable' ]; do
   printf 'Choose kernel type:\n  1) LTS\n  2) Stable\n'
   read kernel_type
   case $kernel_type in
