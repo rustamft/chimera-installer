@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 cat << EOF
 #################################################################
@@ -18,33 +18,33 @@ echo ""
 
 # User choices
 
-while [[ -z $disk ]] || [[ ! -e /dev/$disk ]]; do
+while [ -z $disk ] || [ ! -e /dev/$disk ]; do
   read -p "Enter a valid disk name (e.g. sda or nvme0n1): " disk
 done
-if [[ $disk == *"nvme"* ]]; then
+if [ $disk == *"nvme"* ]; then
   partition_number_prefix="p"
 fi
 disk_partition_1="${disk}${partition_number_prefix}1"
 disk_partition_2="${disk}${partition_number_prefix}2"
-while [[ -z $password_encryption ]] || [[ $password_encryption != $password_encryption_confirmation ]]; do
+while [ -z $password_encryption ] || [ $password_encryption != $password_encryption_confirmation ]; do
   read -s -p "Enter a password for the ${disk_partition_2} partition encryption: " password_encryption
   printf "\n"
   read -s -p "Please repeat to confirm: " password_encryption_confirmation
   printf "\n"
 done
-while [[ -z $user_name ]]; do
+while [ -z $user_name ]; do
   read -p "Enter a new administrator name: " user_name
 done
-while [[ -z $password_admin ]] || [[ $password_admin != $password_admin_confirmation ]]; do
+while [ -z $password_admin ] || [ $password_admin != $password_admin_confirmation ]; do
   read -s -p "Enter the administrator password (also used for the root): " password_admin
   printf "\n"
   read -s -p "Please repeat to confirm: " password_admin_confirmation
   printf "\n"
 done
-while [[ -z $host_name ]]; do
+while [ -z $host_name ]; do
   read -p "Enter the host name: " host_name
 done
-while [[ $processor_type != "amd" ]] && [[ $processor_type != "intel" ]]; do
+while [ $processor_type != "amd" ] && [ $processor_type != "intel" ]; do
   printf "Choose processor type:\n  1) AMD\n  2) Intel\n"
   read processor_type
   case $processor_type in
@@ -61,7 +61,7 @@ while [[ $processor_type != "amd" ]] && [[ $processor_type != "intel" ]]; do
       unset processor_type ;;
   esac
 done
-while [[ $kernel_type != "lts" ]] && [[ $kernel_type != "stable" ]]; do
+while [ $kernel_type != "lts" ] && [ $kernel_type != "stable" ]; do
   printf "Choose kernel type:\n  1) LTS\n  2) Stable\n"
   read kernel_type
   case $kernel_type in
@@ -78,7 +78,7 @@ while [[ $kernel_type != "lts" ]] && [[ $kernel_type != "stable" ]]; do
       unset kernel_type ;;
   esac
 done
-while [[ -z $desktop_environment ]]; do
+while [ -z $desktop_environment ]; do
   printf "Choose desktop environment:\n  1) None\n  2) Minimal GNOME\n  3) KDE\n"
   read desktop_environment
   case $desktop_environment in
@@ -97,7 +97,7 @@ while [[ -z $desktop_environment ]]; do
       unset desktop_environment ;;
   esac
 done
-while [[ -z $is_flatpak_required ]]; do
+while [ -z $is_flatpak_required ]; do
   read -p "Is Flatpak installation required? [Y/n] " is_flatpak_required
   case $is_flatpak_required in
     ""|"Y"|"y")
@@ -112,7 +112,7 @@ while [[ -z $is_flatpak_required ]]; do
       ;;
   esac
 done
-while [[ -z $is_swap_required ]]; do
+while [ -z $is_swap_required ]; do
   read -p "Would you like Swap file and zRAM device to be configured? [Y/n] " is_swap_required
   case $is_swap_required in
     ""|"Y"|"y")
@@ -153,7 +153,7 @@ mkfs.vfat /dev/$disk_partition_1
 echo -n $password_encryption | cryptsetup luksFormat /dev/$disk_partition_2 -
 echo -n $password_encryption | cryptsetup luksOpen /dev/$disk_partition_2 cryptroot -
 mkfs.f2fs /dev/mapper/cryptroot
-if [[ ! -e /dev/$disk_partition_1 ]] || [[ ! -e /dev/$disk_partition_2 ]] || [[ ! -e /dev/mapper/cryptroot ]]; then
+if [ ! -e /dev/$disk_partition_1 ] || [ ! -e /dev/$disk_partition_2 ] || [ ! -e /dev/mapper/cryptroot ]; then
   echo "${disk} is not partitioned correctly"
   exit
 fi
