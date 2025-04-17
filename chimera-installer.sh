@@ -18,7 +18,7 @@ echo ""
 
 # User choices
 
-while [ -z $disk ] || [ ! -e /dev/$disk ]; do
+while [ -z $disk ] -o [ ! -e /dev/$disk ]; do
   read -p 'Enter a valid disk name (e.g. sda or nvme0n1): ' disk
 done
 case $disk in
@@ -28,7 +28,7 @@ case $disk in
 esac
 disk_partition_1="${disk}${partition_number_prefix}1"
 disk_partition_2="${disk}${partition_number_prefix}2"
-while [ -z $password_encryption ] || ! [ $password_encryption = $password_encryption_confirmation ]; do
+while [ -z $password_encryption ] -o [ $password_encryption != $password_encryption_confirmation ]; do
   stty -echo; IFS= read -r -p "Enter a password for the ${disk_partition_2} partition encryption: " password_encryption; stty echo
   printf '\n'
   stty -echo; IFS= read -r -p 'Please repeat to confirm: ' password_encryption_confirmation; stty echo
@@ -38,7 +38,7 @@ unset password_encryption_confirmation
 while [ -z $user_name ]; do
   read -p 'Enter a new administrator name: ' user_name
 done
-while [ -z $password_admin ] || [ $password_admin != $password_admin_confirmation ]; do
+while [ -z $password_admin ] -o [ $password_admin != $password_admin_confirmation ]; do
   stty -echo; IFS= read -r -p 'Enter the administrator password (also used for the root): ' password_admin; stty echo
   printf '\n'
   stty -echo; IFS= read -r -p 'Please repeat to confirm: ' password_admin_confirmation; stty echo
@@ -163,7 +163,7 @@ mkfs.vfat /dev/$disk_partition_1
 echo -n $password_encryption | cryptsetup luksFormat /dev/$disk_partition_2 -
 echo -n $password_encryption | cryptsetup luksOpen /dev/$disk_partition_2 cryptroot -
 mkfs.f2fs /dev/mapper/cryptroot
-if [ ! -e /dev/$disk_partition_1 ] || [ ! -e /dev/$disk_partition_2 ] || [ ! -e /dev/mapper/cryptroot ]; then
+if [ ! -e /dev/$disk_partition_1 ] -o [ ! -e /dev/$disk_partition_2 ] -o [ ! -e /dev/mapper/cryptroot ]; then
   echo "${disk} is not partitioned correctly"
   exit
 fi
