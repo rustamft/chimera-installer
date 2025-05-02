@@ -121,6 +121,22 @@ while [ -z $is_flatpak_required ]; do
       ;;
   esac
 done
+while [ -z $is_virt_manager_required ]; do
+  read -p 'Is Virt Manager installation required? [Y/n] ' is_virt_manager_required
+  case $is_virt_manager_required in
+    ''|'Y'|'y')
+      is_virt_manager_required=true
+      packages="$packages qemu-system-x86_64 libvirt virt-manager iptables"
+      ;;
+    'N'|'n')
+      is_virt_manager_required=false
+      ;;
+    *)
+      printf 'This is not an option\n'
+      unset is_virt_manager_required
+      ;;
+  esac
+done
 while [ -z $is_swap_required ]; do
   read -p 'Would you like Swap file and zRAM device to be configured? [Y/n] ' is_swap_required
   case $is_swap_required in
@@ -200,6 +216,11 @@ case ${desktop_environment} in
 esac
 if ${is_flatpak_required}; then
   flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
+fi
+if ${is_virt_manager_required}; then
+  dinitctl -o enable virtqemud
+  dinitctl -o enable virtnetworkd
+  dinitctl -o enable iptables
 fi
 genfstab -U / >> /etc/fstab
 sed -i '' 's/ [^ ]* 0 / defaults 0 /' /etc/fstab
