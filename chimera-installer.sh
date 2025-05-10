@@ -249,6 +249,7 @@ EOF
 
 unset password_encryption
 unset password_admin
+rm /media/root/.sh_history
 umount -R /media/root
 cryptsetup luksClose /dev/mapper/cryptroot
 cat << EOF
