@@ -49,14 +49,17 @@ while [ -z $host_name ]; do
   read -p 'Enter the host name: ' host_name
 done
 while [ -z $processor_type ]; do
-  printf 'Choose processor type:\n  1) AMD\n  2) Intel\n'
+  printf 'Choose CPU microcode:\n  1) None\n  2) AMD\n  3) Intel\n'
   read processor_type
   case $processor_type in
     '1')
+      processor_type='none'
+      ;;
+    '2')
       processor_type='amd'
       packages="$packages ucode-amd"
       ;;
-    '2')
+    '3')
       processor_type='intel'
       packages="$packages ucode-intel"
       ;;
