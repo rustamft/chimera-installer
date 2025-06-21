@@ -227,6 +227,7 @@ if ${is_flatpak_required}; then
 fi
 if ${is_virt_manager_required}; then
   dinitctl -o enable virtqemud
+  dinitctl -o enable virtstoraged
   dinitctl -o enable virtnetworkd
   dinitctl -o enable iptables
 fi
