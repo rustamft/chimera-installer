@@ -85,7 +85,7 @@ while [ -z $kernel_type ]; do
   esac
 done
 while [ -z $desktop_environment ]; do
-  printf 'Choose desktop environment:\n  1) None\n  2) Minimal GNOME\n  3) KDE\n'
+  printf 'Choose desktop environment:\n  1) None\n  2) GNOME\n  3) Minimal GNOME\n  4) KDE\n  5) Minimal KDE\n'
   read desktop_environment
   case $desktop_environment in
     '1')
@@ -93,11 +93,19 @@ while [ -z $desktop_environment ]; do
       ;;
     '2')
       desktop_environment='gnome'
-      packages="$packages gnome !gnome-apps gnome-shell-extensions gnome-system-monitor gnome-tweaks file-roller nautilus tlp kitty"
+      packages="$packages gnome gnome-shell-extensions gnome-system-monitor gnome-tweaks file-roller nautilus tlp kitty"
       ;;
     '3')
+      desktop_environment='gnome-minimal'
+      packages="$packages gnome !gnome-apps gnome-shell-extensions gnome-system-monitor gnome-tweaks file-roller nautilus tlp kitty"
+      ;;
+    '4')
       desktop_environment='kde'
       packages="$packages sddm plasma-desktop tlp kitty"
+      ;;
+    '5')
+      desktop_environment='kde-minimal'
+      packages="$packages sddm plasma-workspace plasma-nm plasma-pa tlp kitty"
       ;;
     *)
       printf 'This is not an option\n'
@@ -207,10 +215,10 @@ dinitctl -o enable networkmanager
 dinitctl -o enable bluetoothd
 dinitctl -o enable tlp
 case ${desktop_environment} in
-  'gnome')
+  'gnome'|'gnome-minimal')
     dinitctl -o enable gdm
     ;;
-  'kde')
+  'kde'|'kde-minimal')
     dinitctl -o enable sddm
     ;;
 esac
