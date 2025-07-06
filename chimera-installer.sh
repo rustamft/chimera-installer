@@ -88,7 +88,7 @@ while [ -z $kernel_type ]; do
   esac
 done
 while [ -z $desktop_environment ]; do
-  printf 'Choose desktop environment:\n  1) None\n  2) GNOME\n  3) Minimal GNOME\n  4) KDE\n  5) Minimal KDE (experimental, you may need to add packages manually after install to run)\n'
+  printf 'Choose desktop environment:\n  1) None\n  2) GNOME\n  3) Minimal GNOME\n  4) KDE\n  5) Minimal KDE\n'
   read desktop_environment
   case $desktop_environment in
     '1')
