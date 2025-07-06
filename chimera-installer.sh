@@ -108,7 +108,7 @@ while [ -z $desktop_environment ]; do
       ;;
     '5')
       desktop_environment='kde-minimal'
-      packages="$packages sddm plasma-workspace plasma-nm plasma-pa bluedevil kpipewire kwallet-pam xdg-desktop-portal-kde ark dolphin tlp kitty"
+      packages="$packages sddm plasma-desktop !plasma-desktop-x11-meta !plasma-desktop-apps-meta !plasma-desktop-games-meta !plasma-desktop-multimedia-meta !plasma-desktop-devtools-meta !plasma-desktop-accessibility-meta !plasma-desktop-kdepim-meta ark dolphin tlp kitty"
       ;;
     *)
       printf 'This is not an option\n'
