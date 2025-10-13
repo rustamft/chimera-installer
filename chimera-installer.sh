@@ -96,19 +96,19 @@ while [ -z $desktop_environment ]; do
       ;;
     '2')
       desktop_environment='gnome'
-      packages="$packages gnome gnome-shell-extensions gnome-system-monitor gnome-tweaks file-roller nautilus tlp kitty wl-clipboard"
+      packages="$packages gnome gnome-shell-extensions gnome-system-monitor gnome-tweaks file-roller nautilus kitty wl-clipboard"
       ;;
     '3')
       desktop_environment='gnome-minimal'
-      packages="$packages gnome !gnome-apps gnome-shell-extensions gnome-system-monitor gnome-tweaks file-roller nautilus tlp kitty wl-clipboard"
+      packages="$packages gnome !gnome-apps gnome-shell-extensions gnome-system-monitor gnome-tweaks file-roller nautilus kitty wl-clipboard"
       ;;
     '4')
       desktop_environment='kde'
-      packages="$packages sddm plasma-desktop tlp kitty wl-clipboard"
+      packages="$packages sddm plasma-desktop kitty wl-clipboard"
       ;;
     '5')
       desktop_environment='kde-minimal'
-      packages="$packages sddm plasma-desktop !plasma-desktop-x11-meta !plasma-desktop-apps-meta !plasma-desktop-games-meta !plasma-desktop-multimedia-meta !plasma-desktop-devtools-meta !plasma-desktop-accessibility-meta !plasma-desktop-kdepim-meta ark dolphin tlp kitty wl-clipboard"
+      packages="$packages sddm plasma-desktop !plasma-desktop-x11-meta !plasma-desktop-apps-meta !plasma-desktop-games-meta !plasma-desktop-multimedia-meta !plasma-desktop-devtools-meta !plasma-desktop-accessibility-meta !plasma-desktop-kdepim-meta ark dolphin kitty wl-clipboard"
       ;;
     *)
       printf 'This is not an option\n'
@@ -216,7 +216,6 @@ apk update
 echo y | apk add grub-x86_64-efi cryptsetup-scripts dbus networkmanager networkmanager-openvpn bluez pipewire xserver-xorg-minimal xdg-user-dirs ${packages}
 dinitctl -o enable networkmanager
 dinitctl -o enable bluetoothd
-dinitctl -o enable tlp
 case ${desktop_environment} in
   'gnome'|'gnome-minimal')
     dinitctl -o enable gdm
