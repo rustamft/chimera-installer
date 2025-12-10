@@ -150,7 +150,7 @@ while [ -z $is_virt_manager_required ]; do
 done
 while ! [ $swap_size -eq $swap_size 2>/dev/null ]; do
   read -p 'Swap size in Gb (type 0 for none): ' swap_size
-  done
+done
 while ! [ $zram_size -eq $zram_size 2>/dev/null ]; do
   read -p 'zRAM size in Gb (type 0 for none): ' zram_size
 done
