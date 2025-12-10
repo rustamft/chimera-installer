@@ -148,26 +148,11 @@ while [ -z $is_virt_manager_required ]; do
       ;;
   esac
 done
-while [ -z $is_swap_required ]; do
-  read -p 'Would you like Swap file and zRAM device to be configured? [Y/n] ' is_swap_required
-  case $is_swap_required in
-    ''|'Y'|'y')
-      is_swap_required=true
-      while ! [ $swap_size -eq $swap_size 2>/dev/null -o $swap_size -eq 0 2>/dev/null ]; do
-        read -p 'Swap size (Gb): ' swap_size
-      done
-      while ! [ $zram_size -eq $zram_size 2>/dev/null -o $zram_size -eq 0 2>/dev/null ]; do
-        read -p 'zRAM size (Gb): ' zram_size
-      done
-      ;;
-    'N'|'n')
-      is_swap_required=false
-      ;;
-    *)
-      printf 'This is not an option\n'
-      unset is_swap_required
-      ;;
-  esac
+while [ $swap_size -eq $swap_size 2>/dev/null ]; do
+  read -p 'Swap size in Gb (type 0 for none): ' swap_size
+  done
+while [ $zram_size -eq $zram_size 2>/dev/null ]; do
+  read -p 'zRAM size in Gb (type 0 for none): ' zram_size
 done
 
 # Disk partitioning
@@ -235,11 +220,13 @@ if ${is_virt_manager_required}; then
 fi
 genfstab -U / >> /etc/fstab
 sed -i '' 's/ [^ ]* 0 / defaults 0 /' /etc/fstab
-if ${is_swap_required}; then
+if [ $swap_size - gt 0 ]; then
   fallocate -l ${swap_size}G /swapfile
   chmod 600 /swapfile
   mkswap /swapfile
   echo '/swapfile swap swap defaults 0 0' >> /etc/fstab
+fi
+if [ $zram_size - gt 0 ]; then
   printf '#!/bin/sh\n\nmodprobe zram\nzramctl /dev/zram0 --algorithm zstd --size ${zram_size}G\nmkswap -U clear /dev/zram0\nswapon --discard --priority 100 /dev/zram0\n' > /etc/dinit.d/zram.sh
   chmod +x /etc/dinit.d/zram.sh
   printf 'type = scripted\ncommand = /etc/dinit.d/zram.sh\ndepends-on = local.target\n' > /etc/dinit.d/zram
