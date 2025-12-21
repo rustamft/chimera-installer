@@ -172,8 +172,8 @@ w
 q
 EOF
 mkfs.vfat /dev/$disk_partition_1
-echo -n $password_encryption | cryptsetup luksFormat /dev/$disk_partition_2 -
-echo -n $password_encryption | cryptsetup luksOpen /dev/$disk_partition_2 cryptroot -
+echo -n $password_encryption | cryptsetup luksFormat /dev/$disk_partition_2
+echo -n $password_encryption | cryptsetup luksOpen /dev/$disk_partition_2 cryptroot
 mkfs.f2fs /dev/mapper/cryptroot
 if [ ! -e /dev/$disk_partition_1 ] || [ ! -e /dev/$disk_partition_2 ] || [ ! -e /dev/mapper/cryptroot ]; then
   echo "${disk} is not partitioned correctly"
@@ -220,13 +220,13 @@ if ${is_virt_manager_required}; then
 fi
 genfstab -U / >> /etc/fstab
 sed -i '' 's/ [^ ]* 0 / defaults 0 /' /etc/fstab
-if [ $swap_size - gt 0 ]; then
+if [ $swap_size -gt 0 ]; then
   fallocate -l ${swap_size}G /swapfile
   chmod 600 /swapfile
   mkswap /swapfile
   echo '/swapfile swap swap defaults 0 0' >> /etc/fstab
 fi
-if [ $zram_size - gt 0 ]; then
+if [ $zram_size -gt 0 ]; then
   printf '#!/bin/sh\n\nmodprobe zram\nzramctl /dev/zram0 --algorithm zstd --size ${zram_size}G\nmkswap -U clear /dev/zram0\nswapon --discard --priority 100 /dev/zram0\n' > /etc/dinit.d/zram.sh
   chmod +x /etc/dinit.d/zram.sh
   printf 'type = scripted\ncommand = /etc/dinit.d/zram.sh\ndepends-on = local.target\n' > /etc/dinit.d/zram
