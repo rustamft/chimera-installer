@@ -3,7 +3,7 @@
 cat << EOF
 #################################################################
 ###                                                           ###
-###      Wellcome to the Chimera Linux install script!        ###
+###       Welcome to the Chimera Linux install script!        ###
 ###                                                           ###
 ###                         WARNING!                          ###
 ###   The script will destroy all data on a disk you choose   ###
@@ -18,8 +18,8 @@ echo ''
 
 # User choices
 
-while [ -z $disk ] || [ ! -e /dev/$disk ]; do
-  read -p 'Enter a valid disk name (e.g. sda or nvme0n1): ' disk
+while [ -z "$disk" ] || [ ! -e "/dev/$disk" ]; do
+  read -rp 'Enter a valid disk name (e.g. sda or nvme0n1): ' disk
 done
 case $disk in
   *'nvme'*)
@@ -28,29 +28,29 @@ case $disk in
 esac
 disk_partition_1="${disk}${partition_number_prefix}1"
 disk_partition_2="${disk}${partition_number_prefix}2"
-while [ -z $password_encryption ] || [ $password_encryption != $password_encryption_confirmation ]; do
-  stty -echo; IFS= read -r -p "Enter a password for the ${disk_partition_2} partition encryption: " password_encryption; stty echo
+while [ -z "$password_encryption" ] || [ "$password_encryption" != "$password_encryption_confirmation" ]; do
+  stty -echo; IFS= read -rp "Enter a password for the ${disk_partition_2} partition encryption: " password_encryption; stty echo
   printf '\n'
-  stty -echo; IFS= read -r -p 'Please repeat to confirm: ' password_encryption_confirmation; stty echo
+  stty -echo; IFS= read -rp 'Please repeat to confirm: ' password_encryption_confirmation; stty echo
   printf '\n'
 done
 unset password_encryption_confirmation
-while [ -z $user_name ]; do
-  read -p 'Enter a new administrator name: ' user_name
+while [ -z "$user_name" ]; do
+  read -rp 'Enter a new administrator name: ' user_name
 done
-while [ -z $password_admin ] || [ $password_admin != $password_admin_confirmation ]; do
-  stty -echo; IFS= read -r -p 'Enter the administrator password (also used for the root): ' password_admin; stty echo
+while [ -z "$password_admin" ] || [ "$password_admin" != "$password_admin_confirmation" ]; do
+  stty -echo; IFS= read -rp 'Enter the administrator password (also used for the root): ' password_admin; stty echo
   printf '\n'
-  stty -echo; IFS= read -r -p 'Please repeat to confirm: ' password_admin_confirmation; stty echo
+  stty -echo; IFS= read -rp 'Please repeat to confirm: ' password_admin_confirmation; stty echo
   printf '\n'
 done
 unset password_admin_confirmation
-while [ -z $host_name ]; do
-  read -p 'Enter the host name: ' host_name
+while [ -z "$host_name" ]; do
+  read -rp 'Enter the host name: ' host_name
 done
-while [ -z $processor_type ]; do
+while [ -z "$processor_type" ]; do
   printf 'Choose CPU microcode:\n  1) None\n  2) AMD\n  3) Intel\n'
-  read processor_type
+  read -r processor_type
   case $processor_type in
     '1')
       processor_type='none'
@@ -69,9 +69,9 @@ while [ -z $processor_type ]; do
       ;;
   esac
 done
-while [ -z $kernel_type ]; do
+while [ -z "$kernel_type" ]; do
   printf 'Choose kernel type:\n  1) LTS\n  2) Stable\n'
-  read kernel_type
+  read -r kernel_type
   case $kernel_type in
     '1')
       kernel_type='lts'
@@ -87,9 +87,9 @@ while [ -z $kernel_type ]; do
       ;;
   esac
 done
-while [ -z $desktop_environment ]; do
+while [ -z "$desktop_environment" ]; do
   printf 'Choose desktop environment:\n  1) None\n  2) GNOME\n  3) Minimal GNOME\n  4) KDE\n  5) Minimal KDE\n'
-  read desktop_environment
+  read -r desktop_environment
   case $desktop_environment in
     '1')
       desktop_environment='none'
@@ -116,8 +116,8 @@ while [ -z $desktop_environment ]; do
       ;;
   esac
 done
-while [ -z $is_flatpak_required ]; do
-  read -p 'Is Flatpak installation required? [Y/n] ' is_flatpak_required
+while [ -z "$is_flatpak_required" ]; do
+  read -rp 'Is Flatpak installation required? [Y/n] ' is_flatpak_required
   case $is_flatpak_required in
     ''|'Y'|'y')
       is_flatpak_required=true
@@ -132,33 +132,33 @@ while [ -z $is_flatpak_required ]; do
       ;;
   esac
 done
-while [ -z $is_virt_manager_required ]; do
-  read -p 'Is Virt Manager installation required? [Y/n] ' is_virt_manager_required
-  case $is_virt_manager_required in
+while [ -z "$is_virtual_machine_manager_required" ]; do
+  read -rp 'Is Virtual Machine Manager installation required? [Y/n] ' is_virtual_machine_manager_required
+  case $is_virtual_machine_manager_required in
     ''|'Y'|'y')
-      is_virt_manager_required=true
+      is_virtual_machine_manager_required=true
       packages="$packages qemu-system-x86_64 libvirt virt-manager iptables"
       ;;
     'N'|'n')
-      is_virt_manager_required=false
+      is_virtual_machine_manager_required=false
       ;;
     *)
       printf 'This is not an option\n'
-      unset is_virt_manager_required
+      unset is_virtual_machine_manager_required
       ;;
   esac
 done
-while ! [ $swap_size -eq $swap_size 2>/dev/null ]; do
-  read -p 'Swap size in Gb (type 0 for none): ' swap_size
+while ! [ "$swap_size" -ge 0 ] 2>/dev/null; do
+  read -rp 'Swap size in Gb (type 0 for none): ' swap_size
 done
-while ! [ $zram_size -eq $zram_size 2>/dev/null ]; do
-  read -p 'zRAM size in Gb (type 0 for none): ' zram_size
+while ! [ "$zram_size" -ge 0 ]; do
+  read -rp 'zRAM size in Gb (type 0 for none): ' zram_size
 done
 
 # Disk partitioning
 
-wipefs -a /dev/$disk
-fdisk /dev/$disk << EOF
+wipefs -a "/dev/$disk"
+fdisk "/dev/$disk" << EOF
 g
 n
 1
@@ -171,11 +171,11 @@ n
 w
 q
 EOF
-mkfs.vfat /dev/$disk_partition_1
-echo -n $password_encryption | cryptsetup luksFormat /dev/$disk_partition_2
-echo -n $password_encryption | cryptsetup luksOpen /dev/$disk_partition_2 cryptroot
+mkfs.vfat "/dev/$disk_partition_1"
+echo -n "$password_encryption" | cryptsetup luksFormat "/dev/$disk_partition_2"
+echo -n "$password_encryption" | cryptsetup luksOpen "/dev/$disk_partition_2" cryptroot
 mkfs.f2fs /dev/mapper/cryptroot
-if [ ! -e /dev/$disk_partition_1 ] || [ ! -e /dev/$disk_partition_2 ] || [ ! -e /dev/mapper/cryptroot ]; then
+if [ ! -e /"dev/$disk_partition_1" ] || [ ! -e "/dev/$disk_partition_2" ] || [ ! -e /dev/mapper/cryptroot ]; then
   echo "${disk} is not partitioned correctly"
   exit
 fi
@@ -186,7 +186,7 @@ mkdir /media/root
 mount /dev/mapper/cryptroot /media/root
 chmod 755 /media/root
 mkdir /media/root/boot
-mount /dev/$disk_partition_1 /media/root/boot
+mount "/dev/$disk_partition_1" /media/root/boot
 
 # Installation
 
