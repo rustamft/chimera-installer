@@ -192,16 +192,16 @@ mount "/dev/$disk_partition_1" /media/root/boot
 
 chimera-bootstrap /media/root
 chimera-chroot /media/root << EOF
-echo -n ${password_admin} | passwd --stdin root
-useradd --create-home -G wheel,kvm,plugdev ${user_name}
-echo -n ${password_admin} | passwd --stdin ${user_name}
-echo ${host_name} > /etc/hostname
+echo -n "$password_admin" | passwd --stdin root
+useradd --create-home -G wheel,kvm,plugdev "$user_name"
+echo -n "$password_admin" | passwd --stdin "$user_name"
+echo "$host_name" > /etc/hostname
 echo y | apk add chimera-repo-user
 apk update
-echo y | apk add grub-x86_64-efi cryptsetup-scripts dbus networkmanager networkmanager-openvpn bluez pipewire xserver-xorg-minimal xdg-user-dirs ${packages}
+echo y | apk add "grub-x86_64-efi cryptsetup-scripts dbus networkmanager networkmanager-openvpn bluez pipewire xserver-xorg-minimal xdg-user-dirs $packages"
 dinitctl -o enable networkmanager
 dinitctl -o enable bluetoothd
-case ${desktop_environment} in
+case $desktop_environment in
   'gnome'|'gnome-minimal')
     dinitctl -o enable gdm
     ;;
@@ -209,10 +209,10 @@ case ${desktop_environment} in
     dinitctl -o enable sddm
     ;;
 esac
-if ${is_flatpak_required}; then
+if $is_flatpak_required; then
   flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
 fi
-if ${is_virt_manager_required}; then
+if $is_virtual_machine_manager_required; then
   dinitctl -o enable virtqemud
   dinitctl -o enable virtstoraged
   dinitctl -o enable virtnetworkd
@@ -220,23 +220,23 @@ if ${is_virt_manager_required}; then
 fi
 genfstab -U / >> /etc/fstab
 sed -i '' 's/ [^ ]* 0 / defaults 0 /' /etc/fstab
-if [ $swap_size -gt 0 ]; then
-  fallocate -l ${swap_size}G /swapfile
+if [ "$swap_size" -gt 0 ]; then
+  fallocate -l "${swap_size}G" /swapfile
   chmod 600 /swapfile
   mkswap /swapfile
   echo '/swapfile swap swap defaults 0 0' >> /etc/fstab
 fi
-if [ $zram_size -gt 0 ]; then
+if [ "$zram_size" -gt 0 ]; then
   printf '#!/bin/sh\n\nmodprobe zram\nzramctl /dev/zram0 --algorithm zstd --size ${zram_size}G\nmkswap -U clear /dev/zram0\nswapon --discard --priority 100 /dev/zram0\n' > /etc/dinit.d/zram.sh
   chmod +x /etc/dinit.d/zram.sh
   printf 'type = scripted\ncommand = /etc/dinit.d/zram.sh\ndepends-on = local.target\n' > /etc/dinit.d/zram
   dinitctl -o enable zram
 fi
-disk_partition_2_uuid=$(blkid -o value -s UUID /dev/${disk_partition_2})
-echo cryptroot UUID=\${disk_partition_2_uuid} none luks > /etc/crypttab
+disk_partition_2_uuid=$(blkid -o value -s UUID "/dev/$disk_partition_2")
+echo "cryptroot UUID=\$disk_partition_2_uuid none luks" > /etc/crypttab
 cryptroot_uuid=$(blkid -o value -s UUID /dev/mapper/cryptroot)
 grub_cmdline_appendix="cryptdevice=UUID=\${cryptroot_uuid}:cryptroot root=\/dev\/mapper\/cryptroot"
-sed -i '' "s/^GRUB_CMDLINE_LINUX_DEFAULT=\"[^\"]*/& \${grub_cmdline_appendix}/" /etc/default/grub
+sed -i '' "s/^GRUB_CMDLINE_LINUX_DEFAULT=\"[^\"]*/& \$grub_cmdline_appendix/" /etc/default/grub
 echo 'GRUB_ENABLE_CRYPTODISK=y' >> /etc/default/grub
 update-initramfs -c -k all
 grub-install --target=x86_64-efi --efi-directory=/boot
