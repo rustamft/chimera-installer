@@ -151,7 +151,7 @@ done
 while ! [ "$swap_size" -ge 0 ] 2>/dev/null; do
   read -rp 'Swap size in Gb (type 0 for none): ' swap_size
 done
-while ! [ "$zram_size" -ge 0 ]; do
+while ! [ "$zram_size" -ge 0 ] 2>/dev/null; do
   read -rp 'zRAM size in Gb (type 0 for none): ' zram_size
 done
 
