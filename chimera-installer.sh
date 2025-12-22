@@ -154,6 +154,24 @@ done
 while ! [ "$zram_size" -ge 0 ] 2>/dev/null; do
   read -rp 'zRAM size in Gb (type 0 for none): ' zram_size
 done
+while [ -z "$bootloader" ]; do
+  printf 'Choose bootloader:\n  1) GRUB\n  2) systemd-boot\n'
+  read -r bootloader
+  case $bootloader in
+    '1')
+      bootloader='grub'
+      packages="$packages grub-x86_64-efi"
+      ;;
+    '2')
+      bootloader='systemd-boot'
+      packages="$packages systemd-boot"
+      ;;
+    *)
+      printf 'This is not an option\n'
+      unset bootloader
+      ;;
+  esac
+done
 
 # Disk partitioning
 
@@ -164,6 +182,8 @@ n
 1
 
 +1000M
+t
+1
 n
 2
 
@@ -198,7 +218,7 @@ echo -n "$password_admin" | passwd --stdin "$user_name"
 echo "$host_name" > /etc/hostname
 echo y | apk add chimera-repo-user
 apk update
-echo y | apk add grub-x86_64-efi cryptsetup-scripts dbus networkmanager networkmanager-openvpn bluez pipewire xserver-xorg-minimal xdg-user-dirs $packages
+echo y | apk add cryptsetup-scripts dbus networkmanager networkmanager-openvpn bluez pipewire xserver-xorg-minimal xdg-user-dirs $packages
 dinitctl -o enable networkmanager
 dinitctl -o enable bluetoothd
 case $desktop_environment in
@@ -232,12 +252,21 @@ if [ "$zram_size" -gt 0 ]; then
   printf 'type = scripted\ncommand = /etc/dinit.d/zram.sh\ndepends-on = local.target\n' > /etc/dinit.d/zram
   dinitctl -o enable zram
 fi
-disk_partition_2_uuid=$(blkid -o value -s UUID "/dev/$disk_partition_2")
-echo "cryptroot UUID=\$disk_partition_2_uuid none luks" > /etc/crypttab
-echo 'GRUB_ENABLE_CRYPTODISK=y' >> /etc/default/grub
 update-initramfs -c -k all
-grub-install --target=x86_64-efi --efi-directory=/boot
-update-grub
+case $bootloader in
+  'grub')
+    disk_partition_2_uuid=$(blkid -o value -s UUID "/dev/$disk_partition_2")
+    echo "cryptroot UUID=\$disk_partition_2_uuid none luks" > /etc/crypttab
+    echo 'GRUB_ENABLE_CRYPTODISK=y' >> /etc/default/grub
+    grub-install --target=x86_64-efi --efi-directory=/boot
+    update-grub
+    ;;
+  'systemd-boot')
+    bootctl install
+    echo 'options root=/dev/mapper/cryptroot' >> /boot/loader/loader.conf
+    gen-systemd-boot
+    ;;
+esac
 EOF
 
 # Finalizing
