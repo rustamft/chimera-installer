@@ -252,11 +252,11 @@ if [ "$zram_size" -gt 0 ]; then
   printf 'type = scripted\ncommand = /etc/dinit.d/zram.sh\ndepends-on = local.target\n' > /etc/dinit.d/zram
   dinitctl -o enable zram
 fi
+disk_partition_2_uuid=$(blkid -o value -s UUID "/dev/$disk_partition_2")
+echo "cryptroot UUID=\$disk_partition_2_uuid none luks" > /etc/crypttab
 update-initramfs -c -k all
 case $bootloader in
   'grub')
-    disk_partition_2_uuid=$(blkid -o value -s UUID "/dev/$disk_partition_2")
-    echo "cryptroot UUID=\$disk_partition_2_uuid none luks" > /etc/crypttab
     echo 'GRUB_ENABLE_CRYPTODISK=y' >> /etc/default/grub
     grub-install --target=x86_64-efi --efi-directory=/boot
     update-grub
