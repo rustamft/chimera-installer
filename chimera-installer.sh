@@ -175,9 +175,9 @@ mkfs.vfat "/dev/$disk_partition_1"
 echo -n "$password_encryption" | cryptsetup luksFormat "/dev/$disk_partition_2"
 echo -n "$password_encryption" | cryptsetup luksOpen "/dev/$disk_partition_2" cryptroot
 mkfs.f2fs /dev/mapper/cryptroot
-if [ ! -e /"dev/$disk_partition_1" ] || [ ! -e "/dev/$disk_partition_2" ] || [ ! -e /dev/mapper/cryptroot ]; then
-  echo "${disk} is not partitioned correctly"
-  exit
+if [ ! -e "/dev/$disk_partition_1" ] || [ ! -e "/dev/$disk_partition_2" ] || [ ! -e /dev/mapper/cryptroot ]; then
+  echo "$disk is not partitioned correctly"
+  exit 1
 fi
 
 # Partition mounting
