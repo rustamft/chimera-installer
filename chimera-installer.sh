@@ -244,6 +244,7 @@ case $bootloader in
     ;;
   'systemd-boot')
     bootctl install
+    sed -i '' '/timeout/s/^#//' /boot/loader/loader.conf
     echo 'options root=/dev/mapper/cryptroot' >> /boot/loader/loader.conf
     gen-systemd-boot
     ;;
