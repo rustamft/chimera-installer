@@ -22,9 +22,7 @@ while [ -z "$disk" ] || [ ! -e "/dev/$disk" ]; do
   read -rp 'Enter a valid disk name (e.g. sda or nvme0n1): ' disk
 done
 case $disk in
-  *'nvme'*)
-    partition_number_prefix='p'
-    ;;
+  *'nvme'*) partition_number_prefix='p';;
 esac
 disk_partition_1="${disk}${partition_number_prefix}1"
 disk_partition_2="${disk}${partition_number_prefix}2"
@@ -48,42 +46,29 @@ unset password_admin_confirmation
 while [ -z "$host_name" ]; do
   read -rp 'Enter the host name: ' host_name
 done
-while [ -z "$processor_type" ]; do
+while [ -z "$processor_microcode" ]; do
   printf 'Choose CPU microcode:\n  1) None\n  2) AMD\n  3) Intel\n'
-  read -r processor_type
-  case $processor_type in
-    '1')
-      processor_type='none'
-      ;;
-    '2')
-      processor_type='amd'
-      packages="$packages ucode-amd"
-      ;;
-    '3')
-      processor_type='intel'
-      packages="$packages ucode-intel"
-      ;;
+  read -r processor_microcode
+  case $processor_microcode in
+    '1') ;;
+    '2') packages="$packages ucode-amd";;
+    '3') packages="$packages ucode-intel";;
     *)
       printf 'This is not an option\n'
-      unset processor_type
+      unset processor_microcode
       ;;
   esac
 done
-while [ -z "$kernel_type" ]; do
-  printf 'Choose kernel type:\n  1) LTS\n  2) Stable\n'
-  read -r kernel_type
-  case $kernel_type in
-    '1')
-      kernel_type='lts'
-      packages="$packages linux-lts"
-      ;;
-    '2')
-      kernel_type='stable'
-      packages="$packages linux-stable"
-      ;;
+while [ -z "$kernel_selection" ]; do
+  printf 'Choose kernels:\n  1) LTS\n  2) Stable\n 3) LTS and Stable\n'
+  read -r kernel_selection
+  case $kernel_selection in
+    '1') packages="$packages linux-lts";;
+    '2') packages="$packages linux-stable";;
+    '3') packages="$packages linux-lts linux-stable";;
     *)
       printf 'This is not an option\n'
-      unset kernel_type
+      unset kernel_selection
       ;;
   esac
 done
@@ -222,12 +207,8 @@ echo y | apk add cryptsetup-scripts dbus networkmanager networkmanager-openvpn b
 dinitctl -o enable networkmanager
 dinitctl -o enable bluetoothd
 case $desktop_environment in
-  'gnome'|'gnome-minimal')
-    dinitctl -o enable gdm
-    ;;
-  'kde'|'kde-minimal')
-    dinitctl -o enable sddm
-    ;;
+  'gnome'|'gnome-minimal') dinitctl -o enable gdm;;
+  'kde'|'kde-minimal') dinitctl -o enable sddm;;
 esac
 if $is_flatpak_required; then
   flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
