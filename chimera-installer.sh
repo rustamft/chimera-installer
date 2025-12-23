@@ -60,7 +60,7 @@ while [ -z "$processor_microcode" ]; do
   esac
 done
 while [ -z "$kernel_selection" ]; do
-  printf 'Choose kernels:\n  1) LTS\n  2) Stable\n 3) LTS and Stable\n'
+  printf 'Choose kernels:\n  1) LTS\n  2) Stable\n  3) LTS and Stable\n'
   read -r kernel_selection
   case $kernel_selection in
     '1') packages="$packages linux-lts";;
