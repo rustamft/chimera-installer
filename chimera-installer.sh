@@ -275,7 +275,7 @@ EOF
 
 clear_user_choices
 unset clear_user_choices
-rm /media/root/.sh_history
+rm -f /media/root/.sh_history
 umount -R /media/root
 cryptsetup luksClose /dev/mapper/cryptroot
 cat << EOF
