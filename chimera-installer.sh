@@ -26,20 +26,30 @@ case $disk in
 esac
 disk_partition_1="${disk}${partition_number_prefix}1"
 disk_partition_2="${disk}${partition_number_prefix}2"
-while [ -z "$password_encryption" ] || [ "$password_encryption" != "$password_encryption_confirmation" ]; do
-  stty -echo; IFS= read -rp "Enter a password for the ${disk_partition_2} partition encryption: " password_encryption; stty echo
+while [ -z "$password_encryption" ]; do
+  stty -echo; IFS= read -rp "Enter a password for the root (${disk_partition_2}) partition encryption: " password_encryption; stty echo
   printf '\n'
   stty -echo; IFS= read -rp 'Please repeat to confirm: ' password_encryption_confirmation; stty echo
+  printf '\n'
+  if [ "$password_encryption" != "$password_encryption_confirmation" ]; then
+    echo "The passwords do not match!"
+    unset password_encryption
+  fi
   printf '\n'
 done
 unset password_encryption_confirmation
 while [ -z "$user_name" ]; do
   read -rp 'Enter a new administrator name: ' user_name
 done
-while [ -z "$password_admin" ] || [ "$password_admin" != "$password_admin_confirmation" ]; do
+while [ -z "$password_admin" ]; do
   stty -echo; IFS= read -rp 'Enter the administrator password (also used for the root): ' password_admin; stty echo
   printf '\n'
   stty -echo; IFS= read -rp 'Please repeat to confirm: ' password_admin_confirmation; stty echo
+  printf '\n'
+  if [ "$password_admin" != "$password_admin_confirmation" ]; then
+    echo "The passwords do not match!"
+    unset password_admin
+  fi
   printf '\n'
 done
 unset password_admin_confirmation
