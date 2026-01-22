@@ -14,10 +14,10 @@ Your current disks and partitions:
 
 EOF
 lsblk -I 8,253,254,259
-echo ''
 
 # User choices
 
+echo ''
 while [ -z "$disk" ] || [ ! -e "/dev/$disk" ]; do
   read -rp 'Enter a valid disk name (e.g. sda or nvme0n1): ' disk
 done
@@ -26,36 +26,34 @@ case $disk in
 esac
 disk_partition_1="${disk}${partition_number_prefix}1"
 disk_partition_2="${disk}${partition_number_prefix}2"
+echo ''
 while [ -z "$password_encryption" ]; do
-  stty -echo; IFS= read -rp "Enter a password for the root (${disk_partition_2}) partition encryption: " password_encryption; stty echo
-  printf '\n'
-  stty -echo; IFS= read -rp 'Please repeat to confirm: ' password_encryption_confirmation; stty echo
-  printf '\n'
+  stty -echo; IFS= read -rp "Enter a password for the root (${disk_partition_2}) partition encryption: " password_encryption; stty echo; echo ''
+  stty -echo; IFS= read -rp 'Please repeat to confirm: ' password_encryption_confirmation; stty echo; echo ''
   if [ "$password_encryption" != "$password_encryption_confirmation" ]; then
     echo "The passwords do not match!"
     unset password_encryption
   fi
-  printf '\n'
 done
 unset password_encryption_confirmation
+echo ''
 while [ -z "$user_name" ]; do
   read -rp 'Enter a new administrator name: ' user_name
 done
 while [ -z "$password_admin" ]; do
-  stty -echo; IFS= read -rp 'Enter the administrator password (also used for the root): ' password_admin; stty echo
-  printf '\n'
-  stty -echo; IFS= read -rp 'Please repeat to confirm: ' password_admin_confirmation; stty echo
-  printf '\n'
+  stty -echo; IFS= read -rp 'Enter the administrator password (also used for the root): ' password_admin; stty echo; echo ''
+  stty -echo; IFS= read -rp 'Please repeat to confirm: ' password_admin_confirmation; stty echo; echo ''
   if [ "$password_admin" != "$password_admin_confirmation" ]; then
     echo "The passwords do not match!"
     unset password_admin
   fi
-  printf '\n'
 done
 unset password_admin_confirmation
+echo ''
 while [ -z "$host_name" ]; do
   read -rp 'Enter the host name: ' host_name
 done
+echo ''
 while [ -z "$processor_microcode" ]; do
   printf 'Choose CPU microcode:\n  1) None\n  2) AMD\n  3) Intel\n'
   read -r processor_microcode
@@ -64,11 +62,12 @@ while [ -z "$processor_microcode" ]; do
     '2') packages="$packages ucode-amd";;
     '3') packages="$packages ucode-intel";;
     *)
-      printf 'This is not an option\n'
+      echo 'This is not an option!'
       unset processor_microcode
       ;;
   esac
 done
+echo ''
 while [ -z "$kernel_selection" ]; do
   printf 'Choose kernels:\n  1) LTS\n  2) Stable\n  3) LTS and Stable\n'
   read -r kernel_selection
@@ -77,11 +76,12 @@ while [ -z "$kernel_selection" ]; do
     '2') packages="$packages linux-stable";;
     '3') packages="$packages linux-lts linux-stable";;
     *)
-      printf 'This is not an option\n'
+      echo 'This is not an option!'
       unset kernel_selection
       ;;
   esac
 done
+echo ''
 while [ -z "$desktop_environment" ]; do
   printf 'Choose desktop environment:\n  1) None\n  2) GNOME\n  3) Minimal GNOME\n  4) KDE\n  5) Minimal KDE\n'
   read -r desktop_environment
@@ -106,11 +106,12 @@ while [ -z "$desktop_environment" ]; do
       packages="$packages sddm plasma-desktop !plasma-desktop-x11-meta !plasma-desktop-apps-meta !plasma-desktop-games-meta !plasma-desktop-multimedia-meta !plasma-desktop-devtools-meta !plasma-desktop-accessibility-meta !plasma-desktop-kdepim-meta ark dolphin kitty wl-clipboard"
       ;;
     *)
-      printf 'This is not an option\n'
+      echo 'This is not an option!'
       unset desktop_environment
       ;;
   esac
 done
+echo ''
 while [ -z "$is_flatpak_required" ]; do
   read -rp 'Is Flatpak installation required? [Y/n] ' is_flatpak_required
   case $is_flatpak_required in
@@ -122,11 +123,12 @@ while [ -z "$is_flatpak_required" ]; do
       is_flatpak_required=false
       ;;
     *)
-      printf 'This is not an option\n'
+      echo 'This is not an option!'
       unset is_flatpak_required
       ;;
   esac
 done
+echo ''
 while [ -z "$is_virtual_machine_manager_required" ]; do
   read -rp 'Is Virtual Machine Manager installation required? [Y/n] ' is_virtual_machine_manager_required
   case $is_virtual_machine_manager_required in
@@ -138,17 +140,20 @@ while [ -z "$is_virtual_machine_manager_required" ]; do
       is_virtual_machine_manager_required=false
       ;;
     *)
-      printf 'This is not an option\n'
+      echo 'This is not an option!'
       unset is_virtual_machine_manager_required
       ;;
   esac
 done
+echo ''
 while ! [ "$swap_size" -ge 0 ] 2>/dev/null; do
   read -rp 'Swap size in Gb (type 0 for none): ' swap_size
 done
+echo ''
 while ! [ "$zram_size" -ge 0 ] 2>/dev/null; do
   read -rp 'zRAM size in Gb (type 0 for none): ' zram_size
 done
+echo ''
 while [ -z "$bootloader" ]; do
   printf 'Choose bootloader:\n  1) GRUB\n  2) systemd-boot\n'
   read -r bootloader
@@ -162,7 +167,7 @@ while [ -z "$bootloader" ]; do
       packages="$packages systemd-boot"
       ;;
     *)
-      printf 'This is not an option\n'
+      echo 'This is not an option!'
       unset bootloader
       ;;
   esac
@@ -191,7 +196,8 @@ echo -n "$password_encryption" | cryptsetup luksFormat "/dev/$disk_partition_2"
 echo -n "$password_encryption" | cryptsetup luksOpen "/dev/$disk_partition_2" cryptroot
 mkfs.f2fs /dev/mapper/cryptroot
 if [ ! -e "/dev/$disk_partition_1" ] || [ ! -e "/dev/$disk_partition_2" ] || [ ! -e /dev/mapper/cryptroot ]; then
-  echo "$disk is not partitioned correctly"
+  printf "Disk $disk partitioning failed!\n\n"
+  lsblk -I 8,253,254,259
   exit 1
 fi
 
