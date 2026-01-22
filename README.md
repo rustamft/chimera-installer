@@ -7,7 +7,7 @@ This is used to automate installation of the [Chimera Linux](https://chimera-lin
 ### Commands order:
 ```
 apk add wget
-wget https://raw.githubusercontent.com/rustamft/chimera-installer/refs/heads/main/chimera-installer.sh -O 1.sh
+wget bit.ly/chimera-installer -O 1.sh
 chmod +x 1.sh
 ./1.sh
 ```
