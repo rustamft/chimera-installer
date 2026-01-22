@@ -17,6 +17,11 @@ lsblk -I 8,253,254,259
 
 # User choices
 
+clear_user_choices() {
+  unset disk password_encryption user_name password_admin host_name processor_microcode kernel_selection desktop_environment is_flatpak_required is_virtual_machine_manager_required swap_size zram_size bootloader
+}
+
+clear_user_choices
 echo ''
 while [ -z "$disk" ] || [ ! -e "/dev/$disk" ]; do
   read -rp 'Enter a valid disk name (e.g. sda or nvme0n1): ' disk
@@ -268,8 +273,8 @@ EOF
 
 # Finalizing
 
-unset password_encryption
-unset password_admin
+clear_user_choices
+unset clear_user_choices
 rm /media/root/.sh_history
 umount -R /media/root
 cryptsetup luksClose /dev/mapper/cryptroot
