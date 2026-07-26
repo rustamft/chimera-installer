@@ -1,8 +1,8 @@
 #!/bin/sh -e
 
 umount_all() {
-  umount -R /media/root || true
-  cryptsetup luksClose /dev/mapper/cryptroot || true
+  umount -R /media/root > /dev/null 2>&1 || true
+  cryptsetup luksClose /dev/mapper/cryptroot > /dev/null 2>&1 || true
 }
 
 clear_user_choices() {
