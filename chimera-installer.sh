@@ -7,7 +7,7 @@ umount_all() {
 
 clear_user_choices() {
   unset disk password_encryption \
-        password_encryption_confirmation
+        password_encryption_confirmation \
         user_groups \
 	    user_name \
 	    password_admin \
