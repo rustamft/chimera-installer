@@ -1,5 +1,34 @@
 #!/bin/sh -e
 
+umount_all() {
+  umount -R /media/root || true
+  cryptsetup luksClose /dev/mapper/cryptroot || true
+}
+
+clear_user_choices() {
+  unset disk password_encryption \
+        user_groups \
+	      user_name \
+	      password_admin \
+	      host_name \
+	      packages \
+	      processor_microcode \
+	      kernel_selection \
+	      desktop_environment \
+	      is_flatpak_required \
+	      is_virtual_machine_manager_required \
+	      file_system \
+	      swap_size \
+	      zram_size \
+	      bootloader \
+	      wipe_confirmation
+}
+
+set_defaults() {
+  user_groups="wheel,plugdev"
+  packages="cryptsetup-scripts dbus networkmanager networkmanager-openvpn bluez pipewire xserver-xorg-minimal xdg-user-dirs"
+}
+
 cat << EOF
 
 #################################################################
@@ -22,22 +51,11 @@ cat << EOF
 ######################
 
 EOF
-umount_all() {
-  umount -R /media/root || true
-  cryptsetup luksClose /dev/mapper/cryptroot || true
-}
-clear_user_choices() {
-  unset disk password_encryption user_groups user_name password_admin host_name packages processor_microcode kernel_selection desktop_environment is_flatpak_required is_virtual_machine_manager_required file_system swap_size zram_size bootloader
-}
-set_defaults() {
-  user_groups="wheel,plugdev"
-  packages="cryptsetup-scripts dbus networkmanager networkmanager-openvpn bluez pipewire xserver-xorg-minimal xdg-user-dirs"
-}
 umount_all
 clear_user_choices
 set_defaults
 echo ''
-while [ -z "$disk" ] || [ ! -e "/dev/$disk" ]; do
+while [ -z "$disk" ] || [ ! -b "/dev/$disk" ]; do
   read -rp 'Enter a valid disk name (e.g. sda or nvme0n1): ' disk
 done
 case $disk in
@@ -49,10 +67,7 @@ echo ''
 while [ -z "$password_encryption" ]; do
   stty -echo; IFS= read -rp "Enter a password for the root (${disk_partition_2}) partition encryption: " password_encryption; stty echo; echo ''
   stty -echo; IFS= read -rp 'Please repeat to confirm: ' password_encryption_confirmation; stty echo; echo ''
-  if [ "$password_encryption" != "$password_encryption_confirmation" ]; then
-    echo "The passwords do not match!"
-    unset password_encryption
-  fi
+  [ "$password_encryption" != "$password_encryption_confirmation" ] && (echo 'The passwords do not match!'; unset password_encryption)
 done
 unset password_encryption_confirmation
 echo ''
@@ -62,10 +77,7 @@ done
 while [ -z "$password_admin" ]; do
   stty -echo; IFS= read -rp 'Enter the administrator password (also used for the root): ' password_admin; stty echo; echo ''
   stty -echo; IFS= read -rp 'Please repeat to confirm: ' password_admin_confirmation; stty echo; echo ''
-  if [ "$password_admin" != "$password_admin_confirmation" ]; then
-    echo "The passwords do not match!"
-    unset password_admin
-  fi
+  [ "$password_admin" != "$password_admin_confirmation" ] && (echo 'The passwords do not match!'; unset password_admin)
 done
 unset password_admin_confirmation
 echo ''
@@ -148,7 +160,7 @@ while [ -z "$is_virtual_machine_manager_required" ]; do
 done
 echo ''
 while [ -z "$file_system" ]; do
-  printf 'Choose fyle system for root partition:\n  1) ext4\n  2) btrfs\n  3) f2fs\n'
+  printf 'Choose file system for root partition:\n  1) ext4\n  2) btrfs\n  3) f2fs\n'
   read -r file_system
   case $file_system in
     '1') file_system='ext4';;
@@ -190,7 +202,19 @@ cat << EOF
 ###########################
 
 EOF
-wipefs -a "/dev/$disk"
+while [ -z "$wipe_confirmation" ]; do
+  read -rp 'WARNING: All data on the disk are going to be destroyed right now. Are you sure you wish to proceed? [yes/no] ' wipe_confirmation
+  case $wipe_confirmation in
+    'yes') wipefs -a "/dev/$disk";;
+    'no')
+      clear_user_choices
+      umount_all
+      exit 0
+      ;;
+    *) echo 'This is not an option!'; unset wipe_confirmation;;
+  esac
+done
+unset wipe_confirmation
 fdisk "/dev/$disk" << EOF
 g
 n
@@ -308,7 +332,6 @@ cat << EOF
 
 EOF
 clear_user_choices
-unset clear_user_choices
 rm -f /media/root/.sh_history
 umount_all
 cat << EOF
