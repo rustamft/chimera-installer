@@ -7,21 +7,22 @@ umount_all() {
 
 clear_user_choices() {
   unset disk password_encryption \
+        password_encryption_confirmation
         user_groups \
-	      user_name \
-	      password_admin \
-	      host_name \
-	      packages \
-	      processor_microcode \
-	      kernel_selection \
-	      desktop_environment \
-	      is_flatpak_required \
-	      is_virtual_machine_manager_required \
-	      file_system \
-	      swap_size \
-	      zram_size \
-	      bootloader \
-	      wipe_confirmation
+	    user_name \
+	    password_admin \
+	    host_name \
+	    packages \
+	    processor_microcode \
+	    kernel_selection \
+	    desktop_environment \
+	    is_flatpak_required \
+	    is_virtual_machine_manager_required \
+	    file_system \
+	    swap_size \
+	    zram_size \
+	    bootloader \
+	    wipe_confirmation
 }
 
 set_defaults() {
@@ -69,7 +70,6 @@ while [ -z "$password_encryption" ]; do
   stty -echo; IFS= read -rp 'Please repeat to confirm: ' password_encryption_confirmation; stty echo; echo ''
   if [ "$password_encryption" != "$password_encryption_confirmation" ]; then echo 'The passwords do not match!'; unset password_encryption; fi
 done
-unset password_encryption_confirmation
 echo ''
 while [ -z "$user_name" ]; do
   read -rp 'Enter a new administrator name: ' user_name
@@ -111,9 +111,7 @@ while [ -z "$desktop_environment" ]; do
   printf 'Choose desktop environment:\n  1) None\n  2) GNOME\n  3) Minimal GNOME\n  4) KDE\n  5) Minimal KDE\n'
   read -r desktop_environment
   case $desktop_environment in
-    '1')
-      desktop_environment='none'
-      ;;
+    '1') desktop_environment='none';;
     '2')
       desktop_environment='gnome'
       packages="$packages gnome gnome-shell-extensions gnome-system-monitor gnome-tweaks file-roller nautilus kitty wl-clipboard"
@@ -202,6 +200,7 @@ cat << EOF
 ###########################
 
 EOF
+unset wipe_confirmation
 while [ -z "$wipe_confirmation" ]; do
   read -rp 'WARNING: All data on the disk are going to be destroyed right now. Are you sure you wish to proceed? [yes/no] ' wipe_confirmation
   case $wipe_confirmation in
