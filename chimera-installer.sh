@@ -229,8 +229,8 @@ n
 w
 q
 EOF
-mkfs.vfat "/dev/$disk_partition_1"
-echo -n "$password_encryption" | cryptsetup luksFormat "/dev/$disk_partition_2"
+mkfs.vfat -F 32 "/dev/$disk_partition_1"
+echo -n "$password_encryption" | cryptsetup luksFormat -q "/dev/$disk_partition_2"
 echo -n "$password_encryption" | cryptsetup luksOpen "/dev/$disk_partition_2" cryptroot
 case $file_system in
   'btrfs') mkfs.btrfs -f /dev/mapper/cryptroot;;
