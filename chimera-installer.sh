@@ -160,11 +160,11 @@ while [ -z "$is_virtual_machine_manager_required" ]; do
 done
 echo ''
 while [ -z "$file_system" ]; do
-  printf 'Choose file system for root partition:\n  1) ext4\n  2) btrfs\n  3) f2fs\n'
+  printf 'Choose file system for root partition:\n  1) btrfs\n  2) ext4\n  3) f2fs\n'
   read -r file_system
   case $file_system in
-    '1') file_system='ext4';;
-    '2') file_system='btrfs';;
+    '1') file_system='btrfs';;
+    '2') file_system='ext4';;
     '3') file_system='f2fs';;
     *) echo 'This is not an option!'; unset file_system;;
   esac
@@ -234,8 +234,8 @@ mkfs.vfat "/dev/$disk_partition_1"
 echo -n "$password_encryption" | cryptsetup luksFormat "/dev/$disk_partition_2"
 echo -n "$password_encryption" | cryptsetup luksOpen "/dev/$disk_partition_2" cryptroot
 case $file_system in
-  'ext4') mkfs.ext4 /dev/mapper/cryptroot;;
   'btrfs') mkfs.btrfs --force /dev/mapper/cryptroot;;
+  'ext4') mkfs.ext4 /dev/mapper/cryptroot;;
   'f2fs') mkfs.f2fs /dev/mapper/cryptroot;;
   *) printf "\nERROR: File system is not chosen\n\n"; exit 1;;
 esac
