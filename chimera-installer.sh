@@ -67,7 +67,7 @@ echo ''
 while [ -z "$password_encryption" ]; do
   stty -echo; IFS= read -rp "Enter a password for the root (${disk_partition_2}) partition encryption: " password_encryption; stty echo; echo ''
   stty -echo; IFS= read -rp 'Please repeat to confirm: ' password_encryption_confirmation; stty echo; echo ''
-  if [ "$password_encryption" != "$password_encryption_confirmation" ]; then echo 'The passwords do not match!'; unset password_encryption); fi
+  if [ "$password_encryption" != "$password_encryption_confirmation" ]; then echo 'The passwords do not match!'; unset password_encryption; fi
 done
 unset password_encryption_confirmation
 echo ''
