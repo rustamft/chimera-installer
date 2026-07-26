@@ -269,13 +269,14 @@ cat << EOF
 EOF
 chimera-bootstrap /media/root
 chimera-chroot /media/root << EOF
-apk update
-echo y | apk add $packages
 echo -n "$password_admin" | passwd --stdin root
-useradd --create-home -G "$user_groups" "$user_name"
+useradd --create-home "$user_name"
 echo -n "$password_admin" | passwd --stdin "$user_name"
 echo "$host_name" > /etc/hostname
 echo y | apk add chimera-repo-user
+apk update
+echo y | apk add $packages
+usermod -aG "$user_groups"
 dinitctl -o enable networkmanager
 dinitctl -o enable bluetoothd
 case $desktop_environment in
