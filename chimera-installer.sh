@@ -276,7 +276,7 @@ echo "$host_name" > /etc/hostname
 echo y | apk add chimera-repo-user
 apk update
 echo y | apk add $packages
-usermod -aG "$user_groups"
+usermod -aG "$user_groups" "$user_name"
 dinitctl -o enable networkmanager
 dinitctl -o enable bluetoothd
 case $desktop_environment in
