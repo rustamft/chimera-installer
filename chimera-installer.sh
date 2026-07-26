@@ -234,9 +234,9 @@ mkfs.vfat "/dev/$disk_partition_1"
 echo -n "$password_encryption" | cryptsetup luksFormat "/dev/$disk_partition_2"
 echo -n "$password_encryption" | cryptsetup luksOpen "/dev/$disk_partition_2" cryptroot
 case $file_system in
-  'btrfs') mkfs.btrfs --force /dev/mapper/cryptroot;;
+  'btrfs') mkfs.btrfs -f /dev/mapper/cryptroot;;
   'ext4') mkfs.ext4 /dev/mapper/cryptroot;;
-  'f2fs') mkfs.f2fs /dev/mapper/cryptroot;;
+  'f2fs') mkfs.f2fs -f /dev/mapper/cryptroot;;
   *) printf "\nERROR: File system is not chosen\n\n"; exit 1;;
 esac
 if [ ! -e "/dev/$disk_partition_1" ] || [ ! -e "/dev/$disk_partition_2" ] || [ ! -e /dev/mapper/cryptroot ]; then
