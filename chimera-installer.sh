@@ -149,7 +149,7 @@ while [ -z "$is_virtual_machine_manager_required" ]; do
   case $is_virtual_machine_manager_required in
     ''|'Y'|'y')
       is_virtual_machine_manager_required=true
-      packages="$packages qemu-system-x86_64 libvirt virt-manager iptables"
+      packages="$packages qemu-system-x86_64 libvirt virt-manager iptables spice-vdagent"
       user_groups="$user_groups,kvm,libvirt"
       ;;
     'N'|'n') is_virtual_machine_manager_required=false;;
@@ -291,6 +291,7 @@ if $is_virtual_machine_manager_required; then
   dinitctl -o enable virtstoraged
   dinitctl -o enable virtnetworkd
   dinitctl -o enable iptables
+  dinitctl -o enable spice-vdagentd
 fi
 genfstab -U / >> /etc/fstab
 sed -i '' 's/ [^ ]* 0 / defaults 0 /' /etc/fstab
